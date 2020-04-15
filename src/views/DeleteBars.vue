@@ -1,6 +1,6 @@
 <template>
-  <div class="home">
-    <h1>Playback</h1>
+  <div class="delete-bars">
+    <h1>Delete Bars</h1>
     <v-container fluid>
       <v-row class="d-flex flex-wrap">
         <v-img
@@ -10,21 +10,15 @@
           max-width="170"
           src="@/assets/singlebar.jpg"
         ></v-img>
+        <v-btn fab><v-icon x-large>mdi-minus-circle</v-icon></v-btn>
       </v-row>
     </v-container>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-
 export default {
-  name: "Home",
-  data() {
-    return {
-      dialog: false
-    };
-  },
+  name: "DeleteBars",
   computed: {
     bars() {
       return this.$store.getters.getBars;
