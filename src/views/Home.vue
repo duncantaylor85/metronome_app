@@ -4,12 +4,16 @@
     <v-container fluid>
       <v-row class="d-flex flex-wrap">
         <v-img
-          v-for="n in bars"
-          :key="n"
+          v-for="(bar, index) in bars"
+          :key="index"
           class="mb-7"
-          max-width="170"
+          max-width="177"
           src="@/assets/singlebar.jpg"
-        ></v-img>
+          ><p class="ml-1 my-0 font-weight-bold">{{ bar.timeSig.numerator }}</p>
+          <p class="ml-1 my-0 font-weight-bold">
+            {{ bar.timeSig.denominator }}
+          </p>
+        </v-img>
       </v-row>
     </v-container>
   </div>
@@ -22,13 +26,13 @@ export default {
   name: "Home",
   data() {
     return {
-      dialog: false
+      dialog: false,
     };
   },
   computed: {
     bars() {
       return this.$store.getters.getBars;
-    }
-  }
+    },
+  },
 };
 </script>
