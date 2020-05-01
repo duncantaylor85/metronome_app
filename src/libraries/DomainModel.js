@@ -18,7 +18,6 @@ class TimeSignature {
         return new TimeSignature(this.numerator, this.denominator);
     }
 }
-
 class BPM {
     constructor(perMinute, denominator) {
         this.perMinute = perMinute
@@ -29,8 +28,6 @@ class BPM {
         return new BPM(this.perMinute, this.denominator)
     }
 }
-
-
 class BarSequence {
     constructor() {
         this.bars = []
@@ -53,9 +50,7 @@ class BarSequence {
         return this.bars[barNum - 1].getTempo()
     }
 }
-
 class Bar {
-   
     constructor(timeSig, tempo) {
         this.timeSig = timeSig
         this.tempo = tempo
@@ -68,9 +63,6 @@ class Bar {
         return this.tempo.copy() 
     }
 }
-
-
-
 const BasicDuration = {
     _1st: 0,
     _2nd: 1,
@@ -90,16 +82,7 @@ const BasicDuration = {
             default: throw "Tried to get a basic duration of " + i + " which is not one of 1,2,4,8,16,32"
         }
     },
-
     toInteger(bd) {
         return Math.pow(2, bd)
     }
 }
-
-
-
-
-
-
-
-
