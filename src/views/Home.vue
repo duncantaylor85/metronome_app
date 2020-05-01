@@ -30,11 +30,11 @@
                 small
                 fab
                 v-if="subButtonStatus.visibility"
-                @click="subButtonStatus.executeFunction(bar.id)"
+                @click="subButtonStatus.executeFunction(bar.barNumber)"
                 ><v-icon>{{ subButtonStatus.icon }}</v-icon></v-btn
               >
               <v-spacer></v-spacer>
-              <p class="mr-3">{{ bar.bar }}</p>
+              <p class="mr-3">{{ bar.barNumber }}</p>
             </div>
           </v-img>
         </v-row>
@@ -66,41 +66,22 @@ export default {
   name: "TestComponent",
   methods: {
     selectMode(mode) {
-      /*
-      switch (mode) {
-        case "home":
-          this.assignButtonStatus(false, "", (id) => {})
-          break;
-        case "add":
-          this.assignButtonStatus(true, "mdi-plus-circle", (id) => {
-            this.addBar(id);
-          })
-          break;
-        case "delete":
-          this.assignButtonStatus(true, "mdi-minus-circle",  (id) => {
-            this.deleteBar(id);
-          })
-          break;
-        case "edit":
-          this.assignButtonStatus(true, "mdi-pencils", (id) => {
-            this.editBar(id);
-          })
-          break;
-      }
-      */
       this.subButtonStatus = this.menuButtons[mode].subButtonStatus;
     },
-    deleteBar(id) {
+    deleteBar(barNumber) {
       this.bars = this.bars.filter((bar) => {
-        return bar.id != id;
+        return bar.barNumber != barNumber;
       });
     },
-    addBar(id) {
-      this.bars.push({ id: this.nextBarID, bar: this.nextBarID });
-      this.nextBarID++;
+    addBar(barNumber) {
+      this.bars.push({
+        barNumber: this.nextBarNumber,
+        bar: this.nextBarNumber,
+      });
+      this.nextBarNumber++;
     },
-    editBar(id) {
-      alert(`edit bar of id: ${id}`);
+    editBar(barNumber) {
+      alert(`edit bar number: ${barNumber}`);
     },
     assignSubButtonStatus(visibility, icon, executeFunction) {
       return {
@@ -129,23 +110,17 @@ export default {
   created() {
     this.menuButtons = [];
     const menuButtonsToLoad = [
-      // note: (id) => this.addBar(id)    is equivalent to    this.addBar
+      // note: (barNumber) => this.addBar(barNumber)    is equivalent to    this.addBar
       // so if we want we can reduce those to just direct references, e.g.
       //  this.initialiseMenuButtons("Add", "add", "mdi-plus-circle", this.addBar),
-      this.initialiseMenuButtons("Home", "home", "", (id) => {}),
-      this.initialiseMenuButtons("Add", "add", "mdi-plus-circle", (id) => {
-        this.addBar(id);
-      }),
-      this.initialiseMenuButtons("Edit", "edit", "mdi-pencil", (id) => {
-        this.editBar(id);
-      }),
+      this.initialiseMenuButtons("Home", "home", "", (barNumber) => {}),
+      this.initialiseMenuButtons("Add", "add", "mdi-plus-circle", this.addBar),
+      this.initialiseMenuButtons("Edit", "edit", "mdi-pencil", this.editBar),
       this.initialiseMenuButtons(
         "Delete",
         "delete",
         "mdi-minus-circle",
-        (id) => {
-          this.deleteBar(id);
-        }
+        this.deleteBar
       ),
     ];
 
@@ -161,14 +136,14 @@ export default {
   data() {
     return {
       menuButtons: [],
-      nextBarID: 7,
+      nextBarNumber: 7,
       bars: [
-        { id: 1, bar: 1 },
-        { id: 2, bar: 2 },
-        { id: 3, bar: 3 },
-        { id: 4, bar: 4 },
-        { id: 5, bar: 5 },
-        { id: 6, bar: 6 },
+        { barNumber: 1 },
+        { barNumber: 2 },
+        { barNumber: 3 },
+        { barNumber: 4 },
+        { barNumber: 5 },
+        { barNumber: 6 },
       ],
       subButtonStatus: {},
       dialog: false,
