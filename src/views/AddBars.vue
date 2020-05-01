@@ -4,17 +4,17 @@
     <v-container fluid>
       <v-row class="d-flex flex-wrap">
         <v-img
-          v-for="(bar, index) in bars"
-          :key="index"
+          v-for="(bar, i) in barCount"
+          :key="i"
           class="mb-7"
           max-width="177"
           src="@/assets/singlebar.jpg"
         >
           <p class="ml-1 my-0 font-weight-bold">
-            {{ bar.timeSig.numerator }}
+            {{ getTimeSigNumeratorOf(bar) }}
           </p>
           <p class="ml-1 my-0 font-weight-bold">
-            {{ bar.timeSig.denominator }}
+            {{ getTimeSigDenominatorOf(bar) }}
           </p>
         </v-img>
         <v-btn @click="dialog = true" fab
@@ -55,11 +55,16 @@
 </template>
 
 <script>
+import {  TimeSignature, BPM, BarSequence, BasicDuration  } from "@/libraries/DomainModel.js"
+
+// Added import to import the store mutations and getters
+import { mutators, getters } from "@/store/store.js"
+
 export default {
   name: "AddBars",
   data() {
     return {
-      amountOfBars: 1,
+      amountOfBars: 4,
       numerator: 4,
       denominators: [1, 2, 4, 8, 16, 32],
       denominatorSelected: 4,
@@ -68,21 +73,32 @@ export default {
   },
   methods: {
     addBar() {
-      this.$store.dispatch("addBar", {
-        timeSig: {
-          numerator: this.numerator,
-          denominator: this.denominatorSelected,
-        },
-        bpm: { perMinute: 120, denominator: this.denominatorSelected },
+      // Replaced $store.mutators
+      mutators.addBars({
+        timeSig: new TimeSignature(this.numerator, BasicDuration.fromInteger(this.denominatorSelected)),
+        bpm: new BPM(120, BasicDuration.fromInteger(this.denominatorSelected)),
         amountOfBars: this.amountOfBars,
       });
       this.dialog = false;
     },
+    getTimeSigNumeratorOf: function (bar) {
+      // replaces $store.getters
+      return getters.getTimeSigOf(bar).getNumerator()
+    },
+    getTimeSigDenominatorOf: function (bar) {
+      // replaces $store.getters
+      return getters.getTimeSigOf(bar).getDenominatorAsNumber()
+    }
   },
   computed: {
-    bars() {
-      return this.$store.getters.getBars;
-    },
+    barCount: function () {
+      // replaces $store.getters
+      return getters.getBarCount();
+
+      // Or we could use the line
+      // return getters.barCount
+      // using the getter definition in the file
+    }
   },
 };
 </script>

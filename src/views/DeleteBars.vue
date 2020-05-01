@@ -3,17 +3,7 @@
     <h1>Delete Bars</h1>
     <v-container fluid>
       <v-row class="d-flex flex-wrap">
-        <v-img
-          v-for="(bar, index) in bars"
-          :key="index"
-          class="mb-7"
-          max-width="177"
-          src="@/assets/singlebar.jpg"
-          ><p class="ml-1 my-0 font-weight-bold">{{ bar.timeSig.numerator }}</p>
-          <p class="ml-1 my-0 font-weight-bold">
-            {{ bar.timeSig.denominator }}
-          </p>
-        </v-img>
+        delete: {{ bars }} bars exist
         <v-btn fab><v-icon x-large>mdi-minus-circle</v-icon></v-btn>
       </v-row>
     </v-container>
@@ -21,11 +11,12 @@
 </template>
 
 <script>
+import { getters } from "@/store/store.js"
 export default {
   name: "DeleteBars",
   computed: {
     bars() {
-      return this.$store.getters.getBars;
+      return getters.getBarCount();
     },
   },
 };
