@@ -1,45 +1,52 @@
 import Vue from "vue";
-import Vuex from "vuex";
+import {  BarSequence  } from "@/libraries/DomainModel.js"
 
-Vue.use(Vuex);
+/*
+  Adapted from https://vuedose.tips/tips/creating-a-store-without-vuex-in-vue-js-2-6/
+  
+  The store is kept private by not exporting it, so it's not available directly to code outside
+  
+  all modifications and retrievals have to be done via `mutators` and `getters`
 
-export const store = new Vuex.Store({
-  state: {
-    bars: [
-      {
-        timeSig: { numerator: 4, denominator: 4 },
-        bpm: { perMinute: 120, denominator: 4 },
-      },
-      {
-        timeSig: { numerator: 4, denominator: 4 },
-        bpm: { perMinute: 120, denominator: 4 },
-      },
-      {
-        timeSig: { numerator: 3, denominator: 4 },
-        bpm: { perMinute: 120, denominator: 4 },
-      },
-      {
-        timeSig: { numerator: 3, denominator: 4 },
-        bpm: { perMinute: 120, denominator: 4 },
-      },
-    ],
-  },
-  getters: {
-    getBars: (state) => {
-      return state.bars;
-    },
-  },
-  mutations: {
-    addBar: (state, payload) => {
-      for (let i = 0; i < payload.amountOfBars; i++) {
-        let newObject = { timeSig: payload.timeSig, bpm: payload.bpm };
-        state.bars.push(newObject);
-      }
-    },
-  },
-  actions: {
-    addBar: (context, payload) => {
-      context.commit("addBar", payload);
-    },
-  },
+  usage: 
+  import {mutators, getters} from "@/store/store.js"
+  
+  then
+  mutators.addBars({ timeSig, bpm, amountOfBars})
+
+  getters.getTimeSigOf(barNum)
+  getters.getBarCount()
+
+  Also 
+  `getters.barCount` is equivalent to `getters.getBarCount()`,
+  it's testing out a getter property, from
+  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get
+
+  (just because the syntax is a little bit nicer, wanted to see if it worked!)
+*/
+
+
+const store = Vue.observable({
+    barSequence: new BarSequence()
 });
+
+
+export const mutators = {
+  addBars({ timeSig, bpm, amountOfBars }) {
+    store.barSequence.addBarsToEnd(timeSig, bpm, amountOfBars)
+  }
+}
+
+export const getters = {
+  getTimeSigOf: function (barNum) {
+    return store.barSequence.getTimeSigOf(barNum)
+  },
+  getBarCount: function () {
+    return store.barSequence.getBarCount()
+  },
+
+  // Just a test of getter properties, see comment block at top
+  get barCount() {
+    return store.barSequence.getBarCount()
+  }
+}
