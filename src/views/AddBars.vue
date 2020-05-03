@@ -55,10 +55,15 @@
 </template>
 
 <script>
-import {  TimeSignature, BPM, BarSequence, BasicDuration  } from "@/libraries/DomainModel.js"
+import {
+  TimeSignature,
+  BPM,
+  BarSequence,
+  BasicDuration,
+} from "@/libraries/DomainModel.js";
 
 // Added import to import the store mutations and getters
-import { mutators, getters } from "@/store/store.js"
+import { mutators, getters } from "@/store/store.js";
 
 export default {
   name: "AddBars",
@@ -75,30 +80,33 @@ export default {
     addBar() {
       // Replaced $store.mutators
       mutators.addBars({
-        timeSig: new TimeSignature(this.numerator, BasicDuration.fromInteger(this.denominatorSelected)),
+        timeSig: new TimeSignature(
+          this.numerator,
+          BasicDuration.fromInteger(this.denominatorSelected)
+        ),
         bpm: new BPM(120, BasicDuration.fromInteger(this.denominatorSelected)),
         amountOfBars: this.amountOfBars,
       });
       this.dialog = false;
     },
-    getTimeSigNumeratorOf: function (bar) {
+    getTimeSigNumeratorOf: function(bar) {
       // replaces $store.getters
-      return getters.getTimeSigOf(bar).getNumerator()
+      return getters.getTimeSigOf(bar).getNumerator();
     },
-    getTimeSigDenominatorOf: function (bar) {
+    getTimeSigDenominatorOf: function(bar) {
       // replaces $store.getters
-      return getters.getTimeSigOf(bar).getDenominatorAsNumber()
-    }
+      return getters.getTimeSigOf(bar).getDenominatorAsNumber();
+    },
   },
   computed: {
-    barCount: function () {
+    barCount: function() {
       // replaces $store.getters
       return getters.getBarCount();
 
       // Or we could use the line
       // return getters.barCount
       // using the getter definition in the file
-    }
+    },
   },
 };
 </script>

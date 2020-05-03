@@ -11,7 +11,7 @@
             :key="mode"
             @click="selectMode(mode)"
           >
-            {{ menuButtons[mode].label }}
+            {{ menuData.menuButtons[mode].label }}
           </v-btn>
         </v-card>
       </div>
@@ -19,39 +19,62 @@
     <v-content>
       <v-container fluid>
         <v-row class="d-flex flex-wrap">
+          <v-btn v-if="barCount == 0"
+            ><v-icon @click="displayAddBarsDialog"
+              >mdi-plus-circle</v-icon
+            ></v-btn
+          >
           <v-img
-            v-for="(bar, index) in bars"
+            v-for="(bar, index) in barCount"
             :key="index"
             class="mb-7"
             max-width="177"
             src="@/assets/singlebar.jpg"
-            ><div class="d-flex">
+            ><p class="ml-1 my-0 font-weight-bold">
+              {{ getTimeSigNumeratorOf(bar) }}
+            </p>
+            <p class="ml-1 my-0 font-weight-bold">
+              {{ getTimeSigDenominatorOf(bar) }}
+            </p>
+            <div class="d-flex">
               <v-btn
                 small
                 fab
-                v-if="subButtonStatus.visibility"
-                @click="subButtonStatus.executeFunction(bar.barNumber)"
-                ><v-icon>{{ subButtonStatus.icon }}</v-icon></v-btn
+                v-if="menuData.subButtonStatus.visibility"
+                @click="menuData.subButtonStatus.executeFunction(bar)"
+                ><v-icon>{{ menuData.subButtonStatus.icon }}</v-icon></v-btn
               >
               <v-spacer></v-spacer>
-              <p class="mr-3">{{ bar.barNumber }}</p>
             </div>
           </v-img>
         </v-row>
         <v-row justify="center">
-          <v-dialog v-model="dialog" max-width="400">
+          <v-dialog v-model="addBarsData.dialog" max-width="400">
             <v-card>
               <v-card-title>Add Bars:</v-card-title>
               <v-card-text>
-                <v-text-field label="How many bars?"></v-text-field>
-                <v-text-field label="Numerator"></v-text-field>
-                <v-select label="Denominator" value="4"></v-select>
+                <v-text-field
+                  v-model.number="addBarsData.amountOfBars"
+                  label="How many bars?"
+                ></v-text-field>
+                <v-text-field
+                  label="Numerator"
+                  v-model.number="addBarsData.numerator"
+                ></v-text-field>
+                <v-select
+                  :items="addBarsData.denominators"
+                  label="Denominator"
+                  v-model.number="addBarsData.denominatorSelected"
+                  value="4"
+                ></v-select>
               </v-card-text>
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn @click="dialog = false" text color="blue">Cancel</v-btn>
-                <v-btn @click="dialog = false" text color="blue">Add</v-btn>
+                <v-btn @click="addBarsData.dialog = false" text color="blue"
+                  >Cancel</v-btn
+                >
+                <v-btn @click="addBars" text color="blue">Add</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -62,27 +85,67 @@
 </template>
 
 <script>
+import {
+  TimeSignature,
+  BPM,
+  BarSequence,
+  BasicDuration,
+} from "@/libraries/DomainModel.js";
+
+import { mutators, getters } from "@/store/store.js";
+
 export default {
-  name: "TestComponent",
+  name: "Home",
+  data() {
+    return {
+      menuData: {
+        menuButtons: [],
+        subButtonStatus: {},
+      },
+      addBarsData: {
+        amountOfBars: 4,
+        numerator: 4,
+        denominators: [1, 2, 4, 8, 16, 32],
+        denominatorSelected: 4,
+        dialog: false,
+      },
+    };
+  },
   methods: {
+    addBars() {
+      // Replaced $store.mutators
+      mutators.addBars({
+        timeSig: new TimeSignature(
+          this.addBarsData.numerator,
+          BasicDuration.fromInteger(this.addBarsData.denominatorSelected)
+        ),
+        bpm: new BPM(
+          120,
+          BasicDuration.fromInteger(this.addBarsData.denominatorSelected)
+        ),
+        amountOfBars: this.addBarsData.amountOfBars,
+      });
+      this.addBarsData.dialog = false;
+      console.log(this.barCount);
+    },
+    displayAddBarsDialog() {
+      this.addBarsData.dialog = true;
+    },
+    getTimeSigNumeratorOf: function(bar) {
+      // replaces $store.getters
+      return getters.getTimeSigOf(bar).getNumerator();
+    },
+    getTimeSigDenominatorOf: function(bar) {
+      // replaces $store.getters
+      return getters.getTimeSigOf(bar).getDenominatorAsNumber();
+    },
+
     selectMode(mode) {
-      this.subButtonStatus = this.menuButtons[mode].subButtonStatus;
+      this.menuData.subButtonStatus = this.menuData.menuButtons[
+        mode
+      ].subButtonStatus;
     },
-    deleteBar(barNumber) {
-      this.bars = this.bars.filter((bar) => {
-        return bar.barNumber != barNumber;
-      });
-    },
-    addBar(barNumber) {
-      this.bars.push({
-        barNumber: this.nextBarNumber,
-        bar: this.nextBarNumber,
-      });
-      this.nextBarNumber++;
-    },
-    editBar(barNumber) {
-      alert(`edit bar number: ${barNumber}`);
-    },
+
     assignSubButtonStatus(visibility, icon, executeFunction) {
       return {
         visibility,
@@ -108,13 +171,18 @@ export default {
     },
   },
   created() {
-    this.menuButtons = [];
+    this.menuData.menuButtons = [];
     const menuButtonsToLoad = [
       // note: (barNumber) => this.addBar(barNumber)    is equivalent to    this.addBar
       // so if we want we can reduce those to just direct references, e.g.
       //  this.initialiseMenuButtons("Add", "add", "mdi-plus-circle", this.addBar),
       this.initialiseMenuButtons("Home", "home", "", (barNumber) => {}),
-      this.initialiseMenuButtons("Add", "add", "mdi-plus-circle", this.addBar),
+      this.initialiseMenuButtons(
+        "Add",
+        "add",
+        "mdi-plus-circle",
+        this.displayAddBarsDialog
+      ),
       this.initialiseMenuButtons("Edit", "edit", "mdi-pencil", this.editBar),
       this.initialiseMenuButtons(
         "Delete",
@@ -125,29 +193,16 @@ export default {
     ];
 
     menuButtonsToLoad.forEach((menuButton) => {
-      this.menuButtons[menuButton.mode] = menuButton;
+      this.menuData.menuButtons[menuButton.mode] = menuButton;
     });
   },
   computed: {
     menuButtonModes() {
-      return Object.keys(this.menuButtons);
+      return Object.keys(this.menuData.menuButtons);
     },
-  },
-  data() {
-    return {
-      menuButtons: [],
-      nextBarNumber: 7,
-      bars: [
-        { barNumber: 1 },
-        { barNumber: 2 },
-        { barNumber: 3 },
-        { barNumber: 4 },
-        { barNumber: 5 },
-        { barNumber: 6 },
-      ],
-      subButtonStatus: {},
-      dialog: false,
-    };
+    barCount: function() {
+      return getters.getBarCount();
+    },
   },
 };
 </script>
