@@ -1,33 +1,38 @@
 <template>
     <div class="music-renderer">
-        <v-btn v-if="barCount == 0"
-            ><v-icon @click="displayAddBarsDialog"
-              >mdi-plus-circle</v-icon
-            ></v-btn
-          >
-          <v-img
-            v-for="(bar, index) in barCount"
-            :key="index"
-            class="mb-7"
-            max-width="177"
-            src="@/assets/singlebar.jpg"
-            ><p class="ml-1 my-0 font-weight-bold">
-              {{ getTimeSigNumeratorOf(bar) }}
-            </p>
-            <p class="ml-1 my-0 font-weight-bold">
-              {{ getTimeSigDenominatorOf(bar) }}
-            </p>
-            <div class="d-flex">
-              <v-btn
-                small
-                fab
-                v-if="menuData.subButtonStatus.visibility"
-                @click="menuData.subButtonStatus.executeFunction(bar)"
-                ><v-icon>{{ menuData.subButtonStatus.icon }}</v-icon></v-btn
-              >
-              <v-spacer></v-spacer>
-            </div>
-          </v-img>
+        <v-row class="d-flex flex-wrap">
+        
+            <v-btn small
+                    fab 
+                    v-if="barCount == 0 && subButtonStatus.noBarsBehaviour"
+                ><v-icon @click="subButtonStatus.noBarsBehaviour"
+                >{{ subButtonStatus.icon }}</v-icon
+                ></v-btn
+            >
+            <v-img
+                v-for="(bar, index) in barCount"
+                :key="index"
+                class="mb-7"
+                max-width="177"
+                src="@/assets/singlebar.jpg"
+                ><p class="ml-1 my-0 font-weight-bold">
+                {{ getTimeSigNumeratorOf(bar) }}
+                </p>
+                <p class="ml-1 my-0 font-weight-bold">
+                {{ getTimeSigDenominatorOf(bar) }}
+                </p>
+                <div class="d-flex">
+                <v-btn
+                    small
+                    fab
+                    v-if="subButtonStatus.visibility"
+                    @click="subButtonStatus.executeFunction(bar)"
+                    ><v-icon>{{ subButtonStatus.icon }}</v-icon></v-btn
+                >
+                <v-spacer></v-spacer>
+                </div>
+            </v-img>
+          </v-row>
     </div>
 </template>
 <script>
@@ -51,6 +56,7 @@ export default {
     barCount: function() {
       return getters.getBarCount();
     },
-  }
+  },
+  props: ["subButtonStatus"]
 }
 </script>

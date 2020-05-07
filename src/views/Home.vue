@@ -6,15 +6,6 @@
           <v-btn><v-icon large>mdi-pause</v-icon></v-btn>
           <v-btn><v-icon large>mdi-play</v-icon></v-btn>
           <v-btn><v-icon large>mdi-stop</v-icon></v-btn>
-
-          <!-- <v-btn
-            
-            v-for="mode in menuButtonModes"
-            :key="mode"
-            @click="selectMode(mode)"
-          >
-            {{ menuData.menuButtons[mode].label }}
-          </v-btn> -->
         </v-card>
         <v-card>
           <v-tabs>
@@ -30,37 +21,7 @@
     </v-app-bar>
     <v-content>
       <v-container fluid>
-        <v-row class="d-flex flex-wrap">
-          <MusicRendering />
-          <!-- <v-btn v-if="barCount == 0"
-            ><v-icon @click="displayAddBarsDialog"
-              >mdi-plus-circle</v-icon
-            ></v-btn
-          >
-          <v-img
-            v-for="(bar, index) in barCount"
-            :key="index"
-            class="mb-7"
-            max-width="177"
-            src="@/assets/singlebar.jpg"
-            ><p class="ml-1 my-0 font-weight-bold">
-              {{ getTimeSigNumeratorOf(bar) }}
-            </p>
-            <p class="ml-1 my-0 font-weight-bold">
-              {{ getTimeSigDenominatorOf(bar) }}
-            </p>
-            <div class="d-flex">
-              <v-btn
-                small
-                fab
-                v-if="menuData.subButtonStatus.visibility"
-                @click="menuData.subButtonStatus.executeFunction(bar)"
-                ><v-icon>{{ menuData.subButtonStatus.icon }}</v-icon></v-btn
-              >
-              <v-spacer></v-spacer>
-            </div>
-          </v-img> -->
-        </v-row>
+        <MusicRendering :subButtonStatus="menuData.subButtonStatus" />
         <v-row justify="center">
           <v-dialog v-model="addBarsData.dialog" max-width="400">
             <v-card>
@@ -151,23 +112,23 @@ export default {
     },
 
     selectMode(mode) {
-      this.menuData.subButtonStatus = this.menuData.menuButtons[
-        mode
-      ].subButtonStatus;
+      this.menuData.subButtonStatus = this.menuData.menuButtons[mode].subButtonStatus;
     },
 
-    assignSubButtonStatus(visibility, icon, executeFunction) {
+    assignSubButtonStatus(visibility, icon, executeFunction, noBarsBehaviour) {
       return {
         visibility,
         icon,
         executeFunction,
+        noBarsBehaviour // null for no behaviour and don't draw a button; otherwise use the standard icon with the given behaviour
       };
     },
     initialiseMenuButtons(
       label,
       mode,
       subButtonIcon,
-      subButtonExecuteFunction
+      subButtonExecuteFunction,
+      subButtonNoBarsBehaviour
     ) {
       return {
         label,
@@ -175,7 +136,8 @@ export default {
         subButtonStatus: this.assignSubButtonStatus(
           subButtonIcon !== "",
           subButtonIcon,
-          subButtonExecuteFunction
+          subButtonExecuteFunction,
+          subButtonNoBarsBehaviour
         ),
       };
     },
@@ -186,19 +148,21 @@ export default {
       // note: (barNumber) => this.addBar(barNumber)    is equivalent to    this.addBar
       // so if we want we can reduce those to just direct references, e.g.
       //  this.initialiseMenuButtons("Add", "add", "mdi-plus-circle", this.addBar),
-      this.initialiseMenuButtons("Home", "home", "", (barNumber) => {}),
+      this.initialiseMenuButtons("Home", "home", "", (barNumber) => {}, null),
       this.initialiseMenuButtons(
         "Add",
         "add",
         "mdi-plus-circle",
+        this.displayAddBarsDialog,
         this.displayAddBarsDialog
       ),
-      this.initialiseMenuButtons("Edit", "edit", "mdi-pencil", this.editBar),
+      this.initialiseMenuButtons("Edit", "edit", "mdi-pencil", this.editBar, null),
       this.initialiseMenuButtons(
         "Delete",
         "delete",
         "mdi-minus-circle",
-        this.deleteBar
+        this.deleteBar,
+        null
       ),
     ];
 
