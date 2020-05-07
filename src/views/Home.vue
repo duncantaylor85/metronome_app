@@ -8,7 +8,7 @@
           <v-btn><v-icon large>mdi-stop</v-icon></v-btn>
         </v-card>
         <v-card>
-          <v-tabs>
+          <v-tabs v-model="menuData.tabSelected">
             <v-tab
               v-for="mode in menuButtonModes"
               :key="mode"
@@ -77,6 +77,7 @@ export default {
       menuData: {
         menuButtons: [],
         subButtonStatus: {},
+        tabSelected: 0,
       },
       addBarsData: {
         amountOfBars: 4,
@@ -89,8 +90,7 @@ export default {
   },
   methods: {
     addBars() {
-      // Replaced $store.mutators
-      mutators.addBars({
+       mutators.addBars({
         timeSig: new TimeSignature(
           this.addBarsData.numerator,
           BasicDuration.fromInteger(this.addBarsData.denominatorSelected)
@@ -102,7 +102,6 @@ export default {
         amountOfBars: this.addBarsData.amountOfBars,
       });
       this.addBarsData.dialog = false;
-      console.log(this.barCount);
     },
     deleteBar(barNumber) {
       mutators.deleteBar(barNumber);
@@ -169,14 +168,18 @@ export default {
     menuButtonsToLoad.forEach((menuButton) => {
       this.menuData.menuButtons[menuButton.mode] = menuButton;
     });
+
+  },
+  mounted() {
+    let defaultButton = "add"
+    let defaultButtonIndex = this.menuButtonModes.findIndex(v => v === defaultButton)
+    this.menuData.tabSelected = defaultButtonIndex
+    this.menuData.subButtonStatus = this.menuData.menuButtons[defaultButton].subButtonStatus
   },
   computed: {
     menuButtonModes() {
       return Object.keys(this.menuData.menuButtons);
     },
-    // barCount: function() {
-    //   return getters.getBarCount();
-    // },
   },
   components: {
     "MusicRendering": MusicRendering

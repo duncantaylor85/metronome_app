@@ -3,8 +3,8 @@
         <v-row class="d-flex flex-wrap">
         
             <v-btn small
-                    fab 
-                    v-if="barCount == 0 && subButtonStatus.noBarsBehaviour"
+                   fab 
+                   v-if="barCount == 0 && subButtonStatus.noBarsBehaviour"
                 ><v-icon @click="subButtonStatus.noBarsBehaviour"
                 >{{ subButtonStatus.icon }}</v-icon
                 ></v-btn
