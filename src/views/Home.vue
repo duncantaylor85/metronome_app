@@ -70,6 +70,8 @@ import {
 
 import { mutators, getters } from "@/store/store.js";
 
+import { setupMenuButtons, selectDefaultTab } from "@/libraries/MenuSetup.js"
+
 export default {
   name: "Home",
   data() {
@@ -113,68 +115,12 @@ export default {
     selectMode(mode) {
       this.menuData.subButtonStatus = this.menuData.menuButtons[mode].subButtonStatus;
     },
-
-    assignSubButtonStatus(visibility, icon, executeFunction, noBarsBehaviour) {
-      return {
-        visibility,
-        icon,
-        executeFunction,
-        noBarsBehaviour // null for no behaviour and don't draw a button; otherwise use the standard icon with the given behaviour
-      };
-    },
-    initialiseMenuButtons(
-      label,
-      mode,
-      subButtonIcon,
-      subButtonExecuteFunction,
-      subButtonNoBarsBehaviour
-    ) {
-      return {
-        label,
-        mode,
-        subButtonStatus: this.assignSubButtonStatus(
-          subButtonIcon !== "",
-          subButtonIcon,
-          subButtonExecuteFunction,
-          subButtonNoBarsBehaviour
-        ),
-      };
-    },
   },
   created() {
-    this.menuData.menuButtons = [];
-    const menuButtonsToLoad = [
-      // note: (barNumber) => this.addBar(barNumber)    is equivalent to    this.addBar
-      // so if we want we can reduce those to just direct references, e.g.
-      //  this.initialiseMenuButtons("Add", "add", "mdi-plus-circle", this.addBar),
-      this.initialiseMenuButtons("Home", "home", "", (barNumber) => {}, null),
-      this.initialiseMenuButtons(
-        "Add",
-        "add",
-        "mdi-plus-circle",
-        this.displayAddBarsDialog,
-        this.displayAddBarsDialog
-      ),
-      this.initialiseMenuButtons("Edit", "edit", "mdi-pencil", this.editBar, null),
-      this.initialiseMenuButtons(
-        "Delete",
-        "delete",
-        "mdi-minus-circle",
-        this.deleteBar,
-        null
-      ),
-    ];
-
-    menuButtonsToLoad.forEach((menuButton) => {
-      this.menuData.menuButtons[menuButton.mode] = menuButton;
-    });
-
+    setupMenuButtons(this)
   },
   mounted() {
-    let defaultButton = "add"
-    let defaultButtonIndex = this.menuButtonModes.findIndex(v => v === defaultButton)
-    this.menuData.tabSelected = defaultButtonIndex
-    this.menuData.subButtonStatus = this.menuData.menuButtons[defaultButton].subButtonStatus
+    selectDefaultTab(this)
   },
   computed: {
     menuButtonModes() {
