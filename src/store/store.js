@@ -1,5 +1,5 @@
 import Vue from "vue";
-import {  BarSequence  } from "@/libraries/DomainModel.js"
+import { BarSequence } from "@/libraries/DomainModel.js";
 
 /*
   Adapted from https://vuedose.tips/tips/creating-a-store-without-vuex-in-vue-js-2-6/
@@ -25,28 +25,29 @@ import {  BarSequence  } from "@/libraries/DomainModel.js"
   (just because the syntax is a little bit nicer, wanted to see if it worked!)
 */
 
-
 const store = Vue.observable({
-    barSequence: new BarSequence()
+  barSequence: new BarSequence(),
 });
-
 
 export const mutators = {
   addBars({ timeSig, bpm, amountOfBars }) {
-    store.barSequence.addBarsToEnd(timeSig, bpm, amountOfBars)
-  }
-}
+    store.barSequence.addBarsToEnd(timeSig, bpm, amountOfBars);
+  },
+  deleteBar(barNumber) {
+    store.barSequence.deleteBar(barNumber);
+  },
+};
 
 export const getters = {
-  getTimeSigOf: function (barNum) {
-    return store.barSequence.getTimeSigOf(barNum)
+  getTimeSigOf: function(barNum) {
+    return store.barSequence.getTimeSigOf(barNum);
   },
-  getBarCount: function () {
-    return store.barSequence.getBarCount()
+  getBarCount: function() {
+    return store.barSequence.getBarCount();
   },
 
   // Just a test of getter properties, see comment block at top
   get barCount() {
-    return store.barSequence.getBarCount()
-  }
-}
+    return store.barSequence.getBarCount();
+  },
+};
