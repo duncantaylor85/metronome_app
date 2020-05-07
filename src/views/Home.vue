@@ -6,14 +6,25 @@
           <v-btn><v-icon large>mdi-pause</v-icon></v-btn>
           <v-btn><v-icon large>mdi-play</v-icon></v-btn>
           <v-btn><v-icon large>mdi-stop</v-icon></v-btn>
-          <v-btn
-            link
+
+          <!-- <v-btn
+            
             v-for="mode in menuButtonModes"
             :key="mode"
             @click="selectMode(mode)"
           >
             {{ menuData.menuButtons[mode].label }}
-          </v-btn>
+          </v-btn> -->
+        </v-card>
+        <v-card>
+          <v-tabs>
+            <v-tab
+              v-for="mode in menuButtonModes"
+              :key="mode"
+              @click="selectMode(mode)"
+              >{{ menuData.menuButtons[mode].label }}</v-tab
+            >
+          </v-tabs>
         </v-card>
       </div>
     </v-app-bar>
