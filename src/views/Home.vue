@@ -7,6 +7,7 @@
           <v-btn><v-icon large>mdi-play</v-icon></v-btn>
           <v-btn><v-icon large>mdi-stop</v-icon></v-btn>
           <v-btn
+            link
             v-for="mode in menuButtonModes"
             :key="mode"
             @click="selectMode(mode)"
@@ -127,6 +128,9 @@ export default {
       });
       this.addBarsData.dialog = false;
       console.log(this.barCount);
+    },
+    deleteBar(barNumber) {
+      mutators.deleteBar(barNumber);
     },
     displayAddBarsDialog() {
       this.addBarsData.dialog = true;
