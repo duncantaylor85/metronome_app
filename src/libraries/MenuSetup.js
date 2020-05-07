@@ -1,6 +1,4 @@
-export { setupMenuButtons, selectDefaultTab }
-
-function setupMenuButtons(menuComponent) {
+export function setupMenuButtons(menuComponent) {
     menuComponent.menuData.menuButtons = [];
     const menuButtonsToLoad = [
       initialiseMenuButtons("Home", "home", "", (barNumber) => {}, null),
@@ -26,7 +24,7 @@ function setupMenuButtons(menuComponent) {
     });
 }
 
-function selectDefaultTab(menuComponent) {
+export function selectDefaultTab(menuComponent) {
     let defaultButton = "add"
     let defaultButtonIndex = menuComponent.menuButtonModes.findIndex(v => v === defaultButton)
     menuComponent.menuData.tabSelected = defaultButtonIndex
