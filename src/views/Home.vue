@@ -20,7 +20,8 @@
     <v-content>
       <v-container fluid>
         <v-row class="d-flex flex-wrap">
-          <v-btn v-if="barCount == 0"
+          <MusicRendering />
+          <!-- <v-btn v-if="barCount == 0"
             ><v-icon @click="displayAddBarsDialog"
               >mdi-plus-circle</v-icon
             ></v-btn
@@ -47,7 +48,7 @@
               >
               <v-spacer></v-spacer>
             </div>
-          </v-img>
+          </v-img> -->
         </v-row>
         <v-row justify="center">
           <v-dialog v-model="addBarsData.dialog" max-width="400">
@@ -86,6 +87,8 @@
 </template>
 
 <script>
+import MusicRendering from "@/components/MusicRendering.vue"
+
 import {
   TimeSignature,
   BPM,
@@ -134,14 +137,6 @@ export default {
     },
     displayAddBarsDialog() {
       this.addBarsData.dialog = true;
-    },
-    getTimeSigNumeratorOf: function(bar) {
-      // replaces $store.getters
-      return getters.getTimeSigOf(bar).getNumerator();
-    },
-    getTimeSigDenominatorOf: function(bar) {
-      // replaces $store.getters
-      return getters.getTimeSigOf(bar).getDenominatorAsNumber();
     },
 
     selectMode(mode) {
@@ -204,9 +199,12 @@ export default {
     menuButtonModes() {
       return Object.keys(this.menuData.menuButtons);
     },
-    barCount: function() {
-      return getters.getBarCount();
-    },
+    // barCount: function() {
+    //   return getters.getBarCount();
+    // },
   },
+  components: {
+    "MusicRendering": MusicRendering
+  }
 };
 </script>
