@@ -6,18 +6,9 @@
           <v-btn><v-icon large>mdi-pause</v-icon></v-btn>
           <v-btn><v-icon large>mdi-play</v-icon></v-btn>
           <v-btn><v-icon large>mdi-stop</v-icon></v-btn>
-
-          <!-- <v-btn
-            
-            v-for="mode in menuButtonModes"
-            :key="mode"
-            @click="selectMode(mode)"
-          >
-            {{ menuData.menuButtons[mode].label }}
-          </v-btn> -->
         </v-card>
         <v-card>
-          <v-tabs>
+          <v-tabs v-model="menuData.tabSelected">
             <v-tab
               v-for="mode in menuButtonModes"
               :key="mode"
@@ -30,36 +21,7 @@
     </v-app-bar>
     <v-content>
       <v-container fluid>
-        <v-row class="d-flex flex-wrap">
-          <v-btn v-if="barCount == 0"
-            ><v-icon @click="displayAddBarsDialog"
-              >mdi-plus-circle</v-icon
-            ></v-btn
-          >
-          <v-img
-            v-for="(bar, index) in barCount"
-            :key="index"
-            class="mb-7"
-            max-width="177"
-            src="@/assets/singlebar.jpg"
-            ><p class="ml-1 my-0 font-weight-bold">
-              {{ getTimeSigNumeratorOf(bar) }}
-            </p>
-            <p class="ml-1 my-0 font-weight-bold">
-              {{ getTimeSigDenominatorOf(bar) }}
-            </p>
-            <div class="d-flex">
-              <v-btn
-                small
-                fab
-                v-if="menuData.subButtonStatus.visibility"
-                @click="menuData.subButtonStatus.executeFunction(bar)"
-                ><v-icon>{{ menuData.subButtonStatus.icon }}</v-icon></v-btn
-              >
-              <v-spacer></v-spacer>
-            </div>
-          </v-img>
-        </v-row>
+        <MusicRendering :subButtonStatus="menuData.subButtonStatus" />
         <v-row justify="center">
           <v-dialog v-model="addBarsData.dialog" max-width="400">
             <v-card>
@@ -97,6 +59,8 @@
 </template>
 
 <script>
+import MusicRendering from "@/components/MusicRendering.vue"
+
 import {
   TimeSignature,
   BPM,
@@ -106,6 +70,8 @@ import {
 
 import { mutators, getters } from "@/store/store.js";
 
+import { setupMenuButtons, selectDefaultTab } from "@/libraries/MenuSetup.js"
+
 export default {
   name: "Home",
   data() {
@@ -113,6 +79,7 @@ export default {
       menuData: {
         menuButtons: [],
         subButtonStatus: {},
+        tabSelected: 0,
       },
       addBarsData: {
         amountOfBars: 4,
@@ -125,8 +92,7 @@ export default {
   },
   methods: {
     addBars() {
-      // Replaced $store.mutators
-      mutators.addBars({
+       mutators.addBars({
         timeSig: new TimeSignature(
           this.addBarsData.numerator,
           BasicDuration.fromInteger(this.addBarsData.denominatorSelected)
@@ -138,7 +104,6 @@ export default {
         amountOfBars: this.addBarsData.amountOfBars,
       });
       this.addBarsData.dialog = false;
-      console.log(this.barCount);
     },
     deleteBar(barNumber) {
       mutators.deleteBar(barNumber);
@@ -146,78 +111,24 @@ export default {
     displayAddBarsDialog() {
       this.addBarsData.dialog = true;
     },
-    getTimeSigNumeratorOf: function(bar) {
-      // replaces $store.getters
-      return getters.getTimeSigOf(bar).getNumerator();
-    },
-    getTimeSigDenominatorOf: function(bar) {
-      // replaces $store.getters
-      return getters.getTimeSigOf(bar).getDenominatorAsNumber();
-    },
 
     selectMode(mode) {
-      this.menuData.subButtonStatus = this.menuData.menuButtons[
-        mode
-      ].subButtonStatus;
-    },
-
-    assignSubButtonStatus(visibility, icon, executeFunction) {
-      return {
-        visibility,
-        icon,
-        executeFunction,
-      };
-    },
-    initialiseMenuButtons(
-      label,
-      mode,
-      subButtonIcon,
-      subButtonExecuteFunction
-    ) {
-      return {
-        label,
-        mode,
-        subButtonStatus: this.assignSubButtonStatus(
-          subButtonIcon !== "",
-          subButtonIcon,
-          subButtonExecuteFunction
-        ),
-      };
+      this.menuData.subButtonStatus = this.menuData.menuButtons[mode].subButtonStatus;
     },
   },
   created() {
-    this.menuData.menuButtons = [];
-    const menuButtonsToLoad = [
-      // note: (barNumber) => this.addBar(barNumber)    is equivalent to    this.addBar
-      // so if we want we can reduce those to just direct references, e.g.
-      //  this.initialiseMenuButtons("Add", "add", "mdi-plus-circle", this.addBar),
-      this.initialiseMenuButtons("Home", "home", "", (barNumber) => {}),
-      this.initialiseMenuButtons(
-        "Add",
-        "add",
-        "mdi-plus-circle",
-        this.displayAddBarsDialog
-      ),
-      this.initialiseMenuButtons("Edit", "edit", "mdi-pencil", this.editBar),
-      this.initialiseMenuButtons(
-        "Delete",
-        "delete",
-        "mdi-minus-circle",
-        this.deleteBar
-      ),
-    ];
-
-    menuButtonsToLoad.forEach((menuButton) => {
-      this.menuData.menuButtons[menuButton.mode] = menuButton;
-    });
+    setupMenuButtons(this)
+  },
+  mounted() {
+    selectDefaultTab(this)
   },
   computed: {
     menuButtonModes() {
       return Object.keys(this.menuData.menuButtons);
     },
-    barCount: function() {
-      return getters.getBarCount();
-    },
   },
+  components: {
+    "MusicRendering": MusicRendering
+  }
 };
 </script>
