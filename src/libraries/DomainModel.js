@@ -76,7 +76,6 @@ const BasicDuration = {
   _16th: 4,
   _32nd: 5,
   fromInteger(i) {
-    console.log("fromInteger " + i);
     switch (i) {
       case 1:
         return BasicDuration._1st;
