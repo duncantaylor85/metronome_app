@@ -22,7 +22,11 @@
     <v-content>
       <v-container fluid>
         <MusicRendering :subButtonStatus="menuData.subButtonStatus" />
-        <v-row justify="center">
+        <AddBarsDialog
+          :toggleAddBarsModal="addBarsData.dialog"
+          @close-dialog="closeAddDialog"
+        />
+        <!-- <v-row justify="center">
           <v-dialog v-model="addBarsData.dialog" max-width="400">
             <v-card>
               <v-card-title>Add Bars:</v-card-title>
@@ -52,14 +56,15 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-        </v-row>
+        </v-row> -->
       </v-container>
     </v-content>
   </div>
 </template>
 
 <script>
-import MusicRendering from "@/components/MusicRendering.vue"
+import MusicRendering from "@/components/MusicRendering.vue";
+import AddBarsDialog from "@/components/AddBarsDialog.vue";
 
 import {
   TimeSignature,
@@ -70,7 +75,7 @@ import {
 
 import { mutators, getters } from "@/store/store.js";
 
-import { setupMenuButtons, selectDefaultTab } from "@/libraries/MenuSetup.js"
+import { setupMenuButtons, selectDefaultTab } from "@/libraries/MenuSetup.js";
 
 export default {
   name: "Home",
@@ -82,45 +87,32 @@ export default {
         tabSelected: 0,
       },
       addBarsData: {
-        amountOfBars: 4,
-        numerator: 4,
-        denominators: [1, 2, 4, 8, 16, 32],
-        denominatorSelected: 4,
         dialog: false,
       },
     };
   },
   methods: {
-    addBars() {
-       mutators.addBars({
-        timeSig: new TimeSignature(
-          this.addBarsData.numerator,
-          BasicDuration.fromInteger(this.addBarsData.denominatorSelected)
-        ),
-        bpm: new BPM(
-          120,
-          BasicDuration.fromInteger(this.addBarsData.denominatorSelected)
-        ),
-        amountOfBars: this.addBarsData.amountOfBars,
-      });
-      this.addBarsData.dialog = false;
-    },
     deleteBar(barNumber) {
       mutators.deleteBar(barNumber);
     },
     displayAddBarsDialog() {
       this.addBarsData.dialog = true;
     },
+    closeAddDialog() {
+      this.addBarsData.dialog = false;
+    },
 
     selectMode(mode) {
-      this.menuData.subButtonStatus = this.menuData.menuButtons[mode].subButtonStatus;
+      this.menuData.subButtonStatus = this.menuData.menuButtons[
+        mode
+      ].subButtonStatus;
     },
   },
   created() {
-    setupMenuButtons(this)
+    setupMenuButtons(this);
   },
   mounted() {
-    selectDefaultTab(this)
+    selectDefaultTab(this);
   },
   computed: {
     menuButtonModes() {
@@ -128,7 +120,8 @@ export default {
     },
   },
   components: {
-    "MusicRendering": MusicRendering
-  }
+    MusicRendering: MusicRendering,
+    AddBarsDialog: AddBarsDialog,
+  },
 };
 </script>
