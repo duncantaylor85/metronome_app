@@ -26,37 +26,6 @@
           :toggleAddBarsModal="addBarsData.dialog"
           @close-dialog="closeAddDialog"
         />
-        <!-- <v-row justify="center">
-          <v-dialog v-model="addBarsData.dialog" max-width="400">
-            <v-card>
-              <v-card-title>Add Bars:</v-card-title>
-              <v-card-text>
-                <v-text-field
-                  v-model.number="addBarsData.amountOfBars"
-                  label="How many bars?"
-                ></v-text-field>
-                <v-text-field
-                  label="Numerator"
-                  v-model.number="addBarsData.numerator"
-                ></v-text-field>
-                <v-select
-                  :items="addBarsData.denominators"
-                  label="Denominator"
-                  v-model.number="addBarsData.denominatorSelected"
-                  value="4"
-                ></v-select>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn @click="addBarsData.dialog = false" text color="blue"
-                  >Cancel</v-btn
-                >
-                <v-btn @click="addBars" text color="blue">Add</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-row> -->
       </v-container>
     </v-content>
   </div>

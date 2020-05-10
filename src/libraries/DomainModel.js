@@ -39,6 +39,10 @@ class BarSequence {
     }
   }
 
+  replaceBar(barNumber, timeSig, bpm) {
+    this.bars[barNumber - 1] = new Bar(timeSig, bpm)
+  }
+
   getBarCount() {
     return this.bars.length;
   }

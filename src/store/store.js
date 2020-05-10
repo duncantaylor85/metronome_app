@@ -13,16 +13,13 @@ import { BarSequence } from "@/libraries/DomainModel.js";
   
   then
   mutators.addBars({ timeSig, bpm, amountOfBars})
+  mutators.deleteBar(barNumber)
+  mutators.editBar({ barNumber, newTimeSig, newBpm })
 
-  getters.getTimeSigOf(barNum)
+  getters.getTimeSigOf(barNumber)
+  getters.getTempoOf(barNumber)
   getters.getBarCount()
 
-  Also 
-  `getters.barCount` is equivalent to `getters.getBarCount()`,
-  it's testing out a getter property, from
-  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get
-
-  (just because the syntax is a little bit nicer, wanted to see if it worked!)
 */
 
 const store = Vue.observable({
@@ -36,18 +33,21 @@ export const mutators = {
   deleteBar(barNumber) {
     store.barSequence.deleteBar(barNumber);
   },
+  // to replace the bar at the given bar number, call with an object containing the bar number, a replacement TimeSignature, and a replacement BPM
+  // requires 1 <= barNumber <= getBarCount()
+  editBar({ barNumber, newTimeSig, newBpm }) {
+    store.barSequence.replaceBar(barNumber, newTimeSig, newBpm)
+  }
 };
 
 export const getters = {
-  getTimeSigOf: function(barNum) {
-    return store.barSequence.getTimeSigOf(barNum);
+  getTimeSigOf: function(barNumber) {
+    return store.barSequence.getTimeSigOf(barNumber);
+  },
+  getTempoOf(barNumber) {
+    return store.barSequence.getTempoOf(barNumber)
   },
   getBarCount: function() {
-    return store.barSequence.getBarCount();
-  },
-
-  // Just a test of getter properties, see comment block at top
-  get barCount() {
     return store.barSequence.getBarCount();
   },
 };
