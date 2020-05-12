@@ -29,20 +29,26 @@
 </template>
 
 <script>
-import { mutators } from "@/store/store.js";
+import { mutators, getters } from "@/store/store.js";
 import { TimeSignature, BPM, BasicDuration } from "@/libraries/DomainModel.js";
 
 export default {
   name: "EditBarDialog",
-  props: ["toggleEditBarModal", "barNumber"],
+  props: ["toggleEditBarModal", "barNumber", "barTimeSig"],
   data() {
     return {
       editBarData: {
-        numerator: 4,
+        numerator: this.barTimeSig.numerator,
         denominators: [1, 2, 4, 8, 16, 32],
-        denominatorSelected: 4,
+        denominatorSelected: this.barTimeSig.denominator,
       },
     };
+  },
+  watch: {
+    barTimeSig() {
+      this.editBarData.numerator = this.barTimeSig.numerator;
+      this.editBarData.denominatorSelected = this.barTimeSig.getDenominatorAsNumber();
+    },
   },
   methods: {
     editBar() {

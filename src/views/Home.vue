@@ -32,6 +32,7 @@
         <EditBarDialog
           :toggleEditBarModal="editBarData.dialog"
           :barNumber="editBarData.barNumber"
+          :barTimeSig="editBarData.barTimeSig"
           @close-dialog="closeEditDialog"
         />
       </v-container>
@@ -70,6 +71,7 @@ export default {
       editBarData: {
         dialog: false,
         barNumber: null,
+        barTimeSig: {},
       },
       rerender: true,
     };
@@ -85,6 +87,7 @@ export default {
     displayEditBarDialog(barNumber) {
       this.editBarData.barNumber = barNumber;
       this.editBarData.dialog = true;
+      this.editBarData.barTimeSig = getters.getTimeSigOf(barNumber);
     },
     closeAddDialog() {
       this.addBarsData.dialog = false;
