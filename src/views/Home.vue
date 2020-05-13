@@ -21,10 +21,19 @@
     </v-app-bar>
     <v-content>
       <v-container fluid>
-        <MusicRendering :subButtonStatus="menuData.subButtonStatus" />
+        <MusicRendering
+          :subButtonStatus="menuData.subButtonStatus"
+          :key="rerender"
+        />
         <AddBarsDialog
           :toggleAddBarsModal="addBarsData.dialog"
           @close-dialog="closeAddDialog"
+        />
+        <EditBarDialog
+          :toggleEditBarModal="editBarData.dialog"
+          :barNumber="editBarData.barNumber"
+          :barTimeSig="editBarData.barTimeSig"
+          @close-dialog="closeEditDialog"
         />
       </v-container>
     </v-content>
@@ -34,6 +43,7 @@
 <script>
 import MusicRendering from "@/components/MusicRendering.vue";
 import AddBarsDialog from "@/components/AddBarsDialog.vue";
+import EditBarDialog from "@/components/EditBarDialog.vue";
 
 import {
   TimeSignature,
@@ -58,17 +68,33 @@ export default {
       addBarsData: {
         dialog: false,
       },
+      editBarData: {
+        dialog: false,
+        barNumber: null,
+        barTimeSig: {},
+      },
+      rerender: true,
     };
   },
   methods: {
     deleteBar(barNumber) {
       mutators.deleteBar(barNumber);
     },
+
     displayAddBarsDialog() {
       this.addBarsData.dialog = true;
     },
+    displayEditBarDialog(barNumber) {
+      this.editBarData.barNumber = barNumber;
+      this.editBarData.dialog = true;
+      this.editBarData.barTimeSig = getters.getTimeSigOf(barNumber);
+    },
     closeAddDialog() {
       this.addBarsData.dialog = false;
+    },
+    closeEditDialog() {
+      this.editBarData.dialog = false;
+      this.rerender = !this.rerender;
     },
 
     selectMode(mode) {
@@ -91,6 +117,7 @@ export default {
   components: {
     MusicRendering: MusicRendering,
     AddBarsDialog: AddBarsDialog,
+    EditBarDialog: EditBarDialog,
   },
 };
 </script>

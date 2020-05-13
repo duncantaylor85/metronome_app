@@ -36,8 +36,8 @@ export const mutators = {
   // to replace the bar at the given bar number, call with an object containing the bar number, a replacement TimeSignature, and a replacement BPM
   // requires 1 <= barNumber <= getBarCount()
   editBar({ barNumber, newTimeSig, newBpm }) {
-    store.barSequence.replaceBar(barNumber, newTimeSig, newBpm)
-  }
+    store.barSequence.replaceBar(barNumber, newTimeSig, newBpm);
+  },
 };
 
 export const getters = {
@@ -45,7 +45,7 @@ export const getters = {
     return store.barSequence.getTimeSigOf(barNumber);
   },
   getTempoOf(barNumber) {
-    return store.barSequence.getTempoOf(barNumber)
+    return store.barSequence.getTempoOf(barNumber);
   },
   getBarCount: function() {
     return store.barSequence.getBarCount();
