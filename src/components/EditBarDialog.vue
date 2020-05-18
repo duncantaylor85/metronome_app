@@ -1,7 +1,11 @@
 <template>
   <div class="edit-bar-dialog">
     <v-row justify="center">
-      <v-dialog v-model="toggleEditBarModal" max-width="400">
+      <v-dialog
+        v-model="toggleEditBarModal"
+        max-width="400"
+        @click:outside="closeDialog"
+      >
         <v-card>
           <v-card-title>Edit Bars:</v-card-title>
           <v-card-text>

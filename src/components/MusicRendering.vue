@@ -18,16 +18,18 @@
         <p class="ml-1 my-0 font-weight-bold">
           {{ getTimeSigDenominatorOf(bar) }}
         </p>
-        <div class="d-flex">
-          <v-btn
-            small
-            fab
-            v-if="subButtonStatus.visibility"
-            @click="subButtonStatus.executeFunction(bar)"
-            ><v-icon>{{ subButtonStatus.icon }}</v-icon></v-btn
-          >
-          <v-spacer></v-spacer>
-        </div>
+
+        <v-btn
+          class="mt-6 mr-n3"
+          absolute
+          top
+          right
+          small
+          fab
+          v-if="subButtonStatus.visibility"
+          @click="subButtonStatus.executeFunction(bar)"
+          ><v-icon>{{ subButtonStatus.icon }}</v-icon></v-btn
+        >
       </v-img>
     </v-row>
   </div>
