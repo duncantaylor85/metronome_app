@@ -20,7 +20,7 @@
         </p>
 
         <v-btn
-          class="mt-6"
+          class="mt-6 mr-n3"
           absolute
           top
           right
