@@ -1,5 +1,6 @@
 import Vue from "vue";
-import { BarSequence } from "@/libraries/DomainModel.js";
+import { BarSequence, SimpleBeatSequenceCreator } from "@/libraries/DomainModel.js";
+
 
 /*
   Adapted from https://vuedose.tips/tips/creating-a-store-without-vuex-in-vue-js-2-6/
@@ -41,13 +42,17 @@ export const mutators = {
 };
 
 export const getters = {
-  getTimeSigOf: function(barNumber) {
+  getTimeSigOf(barNumber) {
     return store.barSequence.getTimeSigOf(barNumber);
   },
   getTempoOf(barNumber) {
     return store.barSequence.getTempoOf(barNumber);
   },
-  getBarCount: function() {
+  getBarCount() {
     return store.barSequence.getBarCount();
   },
+  getTimeRepresentation() {
+    return store.barSequence.getTimeRepresentation(new SimpleBeatSequenceCreator())
+  }
+
 };
