@@ -2,6 +2,9 @@
   <div class="home">
     <v-app-bar flat>
       <div class="d-flex">
+        <audio ref="highBeep" src="@/assets/highBeep.mp3"></audio>
+        <audio ref="lowBeep" src="@/assets/lowBeep.mp3"></audio>
+
         <v-card>
           <v-btn><v-icon large>mdi-pause</v-icon></v-btn>
           <v-btn><v-icon large>mdi-play</v-icon></v-btn>
@@ -9,32 +12,16 @@
         </v-card>
         <v-card>
           <v-tabs v-model="menuData.tabSelected">
-            <v-tab
-              v-for="mode in menuButtonModes"
-              :key="mode"
-              @click="selectMode(mode)"
-              >{{ menuData.menuButtons[mode].label }}</v-tab
-            >
+            <v-tab v-for="mode in menuButtonModes" :key="mode" @click="selectMode(mode)">{{ menuData.menuButtons[mode].label }}</v-tab>
           </v-tabs>
         </v-card>
       </div>
     </v-app-bar>
     <v-content>
       <v-container fluid>
-        <MusicRendering
-          :subButtonStatus="menuData.subButtonStatus"
-          :key="rerender"
-        />
-        <AddBarsDialog
-          :toggleAddBarsModal="addBarsData.dialog"
-          @close-dialog="closeAddDialog"
-        />
-        <EditBarDialog
-          :toggleEditBarModal="editBarData.dialog"
-          :barNumber="editBarData.barNumber"
-          :barTimeSig="editBarData.barTimeSig"
-          @close-dialog="closeEditDialog"
-        />
+        <MusicRendering :subButtonStatus="menuData.subButtonStatus" :key="rerender" ref="musicRenderer" />
+        <AddBarsDialog :toggleAddBarsModal="addBarsData.dialog" @close-dialog="closeAddDialog" />
+        <EditBarDialog :toggleEditBarModal="editBarData.dialog" :barNumber="editBarData.barNumber" :barTimeSig="editBarData.barTimeSig" @close-dialog="closeEditDialog" />
       </v-container>
     </v-content>
   </div>
@@ -45,21 +32,17 @@ import MusicRendering from "@/components/MusicRendering.vue";
 import AddBarsDialog from "@/components/AddBarsDialog.vue";
 import EditBarDialog from "@/components/EditBarDialog.vue";
 
-import {
-  TimeSignature,
-  BPM,
-  BarSequence,
-  BasicDuration,
-} from "@/libraries/DomainModel.js";
+import { TimeSignature, BPM, BarSequence, BasicDuration } from "@/libraries/DomainModel.js";
 
 import { mutators, getters } from "@/store/store.js";
-
+import { CountInController, UserPositionController, PlaybackCoordinator } from "@/libraries/PlaybackModel.js";
 import { setupMenuButtons, selectDefaultTab } from "@/libraries/MenuSetup.js";
 
 export default {
   name: "Home",
   data() {
     return {
+      i: 1,
       menuData: {
         menuButtons: [],
         subButtonStatus: {},
@@ -74,9 +57,15 @@ export default {
         barTimeSig: {},
       },
       rerender: true,
+      playbackCoordinator: null,
     };
   },
   methods: {
+    highlightIncrement() {
+      const barHighlighter = this.$refs.musicRenderer.getBarHighlighter();
+      barHighlighter.highlightCountIn(this.i);
+      this.i++;
+    },
     deleteBar(barNumber) {
       mutators.deleteBar(barNumber);
     },
@@ -98,10 +87,20 @@ export default {
     },
 
     selectMode(mode) {
-      this.menuData.subButtonStatus = this.menuData.menuButtons[
-        mode
-      ].subButtonStatus;
+      this.menuData.subButtonStatus = this.menuData.menuButtons[mode].subButtonStatus;
     },
+  },
+  beforeCreate() {
+    const highBeep = this.$refs.highBeep;
+    const lowBeep = this.$refs.lowBeep;
+    const beeps = {
+      playHigh() {
+        highBeep.play();
+      },
+      playLow() {
+        lowBeep.play();
+      },
+    };
   },
   created() {
     setupMenuButtons(this);
