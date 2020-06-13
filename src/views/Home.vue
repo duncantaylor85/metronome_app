@@ -1,40 +1,33 @@
 <template>
   <div class="home">
-    <v-app-bar flat>
+    <v-app-bar flat height="150">
       <div class="d-flex">
-        <v-card>
-          <v-btn><v-icon large>mdi-pause</v-icon></v-btn>
-          <v-btn><v-icon large>mdi-play</v-icon></v-btn>
-          <v-btn><v-icon large>mdi-stop</v-icon></v-btn>
+        <audio ref="highBeep" src="@/assets/highBeep.mp3"></audio>
+        <audio ref="lowBeep" src="@/assets/lowBeep.mp3"></audio>
+        <v-card class="d-flex pr-2 pt-1" height="100">
+          <div class="mx-2 mt-2 mr-4">
+            <v-select :items="countInNumber" type="number" label="How many bars count in?"></v-select>
+            <v-switch v-model="countIn" input-value="true" inset label="Count-in"></v-switch>
+          </div>
+
+          <div class="pt-1">
+            <v-btn @click="playbackCoordinator.startPlaying()"><v-icon large>mdi-play</v-icon></v-btn>
+            <v-btn @click="playbackCoordinator.pausePlaying()"><v-icon large>mdi-pause</v-icon></v-btn>
+            <v-btn @click="playbackCoordinator.rewind()"><v-icon large>mdi-rewind</v-icon></v-btn>
+          </div>
         </v-card>
-        <v-card>
+        <v-card class="ml-6">
           <v-tabs v-model="menuData.tabSelected">
-            <v-tab
-              v-for="mode in menuButtonModes"
-              :key="mode"
-              @click="selectMode(mode)"
-              >{{ menuData.menuButtons[mode].label }}</v-tab
-            >
+            <v-tab v-for="mode in menuButtonModes" :key="mode" @click="selectMode(mode)">{{ menuData.menuButtons[mode].label }}</v-tab>
           </v-tabs>
         </v-card>
       </div>
     </v-app-bar>
     <v-content>
       <v-container fluid>
-        <MusicRendering
-          :subButtonStatus="menuData.subButtonStatus"
-          :key="rerender"
-        />
-        <AddBarsDialog
-          :toggleAddBarsModal="addBarsData.dialog"
-          @close-dialog="closeAddDialog"
-        />
-        <EditBarDialog
-          :toggleEditBarModal="editBarData.dialog"
-          :barNumber="editBarData.barNumber"
-          :barTimeSig="editBarData.barTimeSig"
-          @close-dialog="closeEditDialog"
-        />
+        <MusicRendering :subButtonStatus="menuData.subButtonStatus" :key="rerender" ref="musicRenderer" />
+        <AddBarsDialog :toggleAddBarsModal="addBarsData.dialog" @close-dialog="closeAddDialog" />
+        <EditBarDialog :toggleEditBarModal="editBarData.dialog" :barNumber="editBarData.barNumber" :barTimeSig="editBarData.barTimeSig" @close-dialog="closeEditDialog" />
       </v-container>
     </v-content>
   </div>
@@ -44,16 +37,11 @@
 import MusicRendering from "@/components/MusicRendering.vue";
 import AddBarsDialog from "@/components/AddBarsDialog.vue";
 import EditBarDialog from "@/components/EditBarDialog.vue";
-
-import {
-  TimeSignature,
-  BPM,
-  BarSequence,
-  BasicDuration,
-} from "@/libraries/DomainModel.js";
+import { bus } from "../main";
+import { TimeSignature, BPM, BarSequence, BasicDuration } from "@/libraries/DomainModel.js";
 
 import { mutators, getters } from "@/store/store.js";
-
+import { CountInController, UserPositionController, PlaybackCoordinator } from "@/libraries/PlaybackModel.js";
 import { setupMenuButtons, selectDefaultTab } from "@/libraries/MenuSetup.js";
 
 export default {
@@ -74,11 +62,18 @@ export default {
         barTimeSig: {},
       },
       rerender: true,
+      playbackCoordinator: null,
+      countIn: false,
+      countInNumber: [1, 2, 4, 8],
     };
   },
   methods: {
     deleteBar(barNumber) {
       mutators.deleteBar(barNumber);
+      let numberOfBars = getters.getBarCount();
+      let tempArray = new Array(numberOfBars);
+      let gradient = tempArray.fill("");
+      bus.$emit("change-gradient-array", gradient);
     },
 
     displayAddBarsDialog() {
@@ -98,10 +93,26 @@ export default {
     },
 
     selectMode(mode) {
-      this.menuData.subButtonStatus = this.menuData.menuButtons[
-        mode
-      ].subButtonStatus;
+      this.menuData.subButtonStatus = this.menuData.menuButtons[mode].subButtonStatus;
     },
+  },
+  beforeCreate() {
+    const timeRepresentationProvider = {
+      getTimeRepresentation: getters.getTimeRepresentation,
+    };
+    const highBeep = this.$refs.highBeep;
+    const lowBeep = this.$refs.lowBeep;
+    const clickProvider = {
+      playHigh() {
+        highBeep.play();
+      },
+      playLow() {
+        lowBeep.play();
+      },
+    };
+    const barHighlighter = this.$refs.musicRenderer.getBarHighlighter();
+    const playbackCoordinator = new PlaybackCoordinator(clickProvider, timeRepresentationProvider, barHighlighter);
+    this.playbackCoordinator = playbackCoordinator;
   },
   created() {
     setupMenuButtons(this);

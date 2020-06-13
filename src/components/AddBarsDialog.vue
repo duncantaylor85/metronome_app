@@ -1,28 +1,13 @@
 <template>
   <div class="add-bars-dialog">
     <v-row justify="center">
-      <v-dialog
-        v-model="toggleAddBarsModal"
-        max-width="400"
-        @click:outside="closeDialog"
-      >
+      <v-dialog v-model="toggleAddBarsModal" max-width="400" @click:outside="closeDialog">
         <v-card>
           <v-card-title>Add Bars:</v-card-title>
           <v-card-text>
-            <v-text-field
-              v-model.number="addBarsData.amountOfBars"
-              label="How many bars?"
-            ></v-text-field>
-            <v-text-field
-              label="Numerator"
-              v-model.number="addBarsData.numerator"
-            ></v-text-field>
-            <v-select
-              :items="addBarsData.denominators"
-              label="Denominator"
-              v-model.number="addBarsData.denominatorSelected"
-              value="4"
-            ></v-select>
+            <v-text-field v-model.number="addBarsData.amountOfBars" label="How many bars?"></v-text-field>
+            <v-text-field label="Numerator" v-model.number="addBarsData.numerator"></v-text-field>
+            <v-select :items="addBarsData.denominators" label="Denominator" v-model.number="addBarsData.denominatorSelected" value="4"></v-select>
           </v-card-text>
 
           <v-card-actions>
@@ -37,8 +22,9 @@
 </template>
 
 <script>
-import { mutators } from "@/store/store.js";
+import { mutators, getters } from "@/store/store.js";
 import { TimeSignature, BPM, BasicDuration } from "@/libraries/DomainModel.js";
+import { bus } from "../main";
 
 export default {
   name: "AddBarsDialog",
@@ -56,16 +42,14 @@ export default {
   methods: {
     addBars() {
       mutators.addBars({
-        timeSig: new TimeSignature(
-          this.addBarsData.numerator,
-          BasicDuration.fromInteger(this.addBarsData.denominatorSelected)
-        ),
-        bpm: new BPM(
-          120,
-          BasicDuration.fromInteger(this.addBarsData.denominatorSelected)
-        ),
+        timeSig: new TimeSignature(this.addBarsData.numerator, BasicDuration.fromInteger(this.addBarsData.denominatorSelected)),
+        bpm: new BPM(120, BasicDuration.fromInteger(this.addBarsData.denominatorSelected)),
         amountOfBars: this.addBarsData.amountOfBars,
       });
+      let numberOfBars = getters.getBarCount();
+      let tempArray = new Array(numberOfBars);
+      let gradient = tempArray.fill("");
+      bus.$emit("change-gradient-array", gradient);
       this.closeDialog();
     },
     closeDialog() {
