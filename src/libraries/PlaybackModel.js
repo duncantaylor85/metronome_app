@@ -12,51 +12,88 @@ class CountInController {
     return fullSequence;
   }
 
-  toggleCountIn(newValue) {}
+  toggleCountIn(newValue) {
+    this.enabled = newValue
+  }
 
-  changeCountInLength(barCount) {}
+  changeCountInLength(barCount) {
+    this.countInLength = barCount
+  }
 }
 
-class UserPositionController {
-  constructor(musicRenderer, countInController) {
+class PositionController {
+  constructor(musicRenderer, countInController, playbackCoordinator) {
     this.currentUserSelectedBar = 1;
     this.currentBar = 1;
     this.musicRenderer = musicRenderer;
     this.countInController = countInController;
+    this.playbackCoordinator = playbackCoordinator
   }
   createPlayableTimeRepresentation(bSTR) {
     const trimmedBarSeq = bSTR.trim(this.currentUserSelectedBar);
     const fullSequence = this.countInController.createCountIn(trimmedBarSeq);
     return fullSequence;
   }
-  resetAllPositions(musicRenderer) {}
-  restoreUserPosition(musicRenderer) {}
-  changePosition(barNumber) {}
-  changeUserPosition(barNumber) {}
+  resetAllPositions() {
+    this.currentBar = 1
+    this.currentUserSelectedBar = 1
+    this.musicRenderer.highlightNormal(1)
+  }
+  restoreUserPosition() {
+    this.currentBar = this.currentUserSelectedBar
+    this.musicRenderer.highlightNormal(barNumber)
+  }
+  changePositionNormal(barNumber) {
+    this.currentBar = barNumber
+    this.musicRenderer.highlightNormal(barNumber)
+  }
+  changePositionCountIn(barNumber) {
+    this.currentBar = barNumber
+    this.musicRenderer.highlightCountIn(barNumber)
+  }
+
+  changeUserPosition(barNumber) {
+    this.playbackCoordinator.pausePlaying()
+    this.currentUserSelectedBar = barNumber
+    this.currentBar = barNumber
+    this.musicRenderer.highlightNormal(barNumber)
+  }
 }
 
 class PlaybackCoordinator {
   constructor(clickProvider, timeRepProvider, musicRenderer) {
     this.timeRepProvider = timeRepProvider;
-    let countInController = new CountInController();
-    this.userPosController = new UserPositionController(musicRenderer, countInController);
-    this.recursivePlay = new RecursivePlay(clickProvider, userPosController, musicRenderer);
+    this.countInController = new CountInController();
+    this.positionController = new PositionController(musicRenderer, this.countInController, this);
+    this.recursivePlay = new RecursivePlay(clickProvider, this.positionController, musicRenderer);
   }
+  getCountInInterface() {
+    return {
+      toggleCountIn: this.countInController.toggleCountIn,
+      changeCountInLength: this.countInController.changeCountInLength
+    }
+  }
+  getUserPositionInterface() {
+    return {
+      changeUserPosition: this.positionController.changeUserPosition
+    }
+  }
+
   rewind() {}
   startPlaying() {
     const bSTR = getters.getTimeRepresentation();
-    const fullSequence = this.userPosController.createPlayableTimeRepresentation(bSTR);
+    const fullSequence = this.positionController.createPlayableTimeRepresentation(bSTR);
     this.recursivePlay(fullSequence);
   }
   pausePlaying() {}
 }
 
 class RecursivePlay {
-  constructor(clickProvider, userPosController, musicRenderer) {
+  constructor(clickProvider, positionController, musicRenderer) {
     this.cancelObject = null;
     this.currentIndex = null;
     this.clickProvider = clickProvider;
-    this.userPosController = userPosController;
+    this.positionController = positionController;
     this.bSTR = null;
     this.musicRenderer = musicRenderer;
   }
