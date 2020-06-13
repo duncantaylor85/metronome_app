@@ -36,7 +36,7 @@ class UserPositionController {
 }
 
 class PlaybackCoordinator {
-  constructor(clickProvider, timeRepProvider, musicRenderer, userPosController) {
+  constructor(clickProvider, timeRepProvider, musicRenderer) {
     this.timeRepProvider = timeRepProvider;
     let countInController = new CountInController();
     this.userPosController = new UserPositionController(musicRenderer, countInController);

@@ -1,33 +1,35 @@
 <template>
   <div class="music-renderer">
-    <v-row class="d-flex flex-wrap">
-      <v-btn small fab v-if="barCount == 0 && subButtonStatus.noBarsBehaviour"
-        ><v-icon @click="subButtonStatus.noBarsBehaviour">{{ subButtonStatus.icon }}</v-icon></v-btn
-      >
-      <v-img v-for="(bar, index) in barCount" :gradient="gradient[index]" :key="index" class="mb-7" max-width="177" src="@/assets/singlebar.jpg"
-        ><p class="ml-1 my-0 font-weight-bold">
-          {{ getTimeSigNumeratorOf(bar) }}
-        </p>
-        <p class="ml-1 my-0 font-weight-bold">
-          {{ getTimeSigDenominatorOf(bar) }}
-        </p>
-
-        <v-btn class="mt-6 mr-n3" absolute top right small fab v-if="subButtonStatus.visibility" @click="subButtonStatus.executeFunction(bar)"
-          ><v-icon>{{ subButtonStatus.icon }}</v-icon></v-btn
+    <v-container>
+      <v-row class="d-flex flex-wrap">
+        <v-btn small fab v-if="barCount == 0 && subButtonStatus.noBarsBehaviour"
+          ><v-icon @click="subButtonStatus.noBarsBehaviour">{{ subButtonStatus.icon }}</v-icon></v-btn
         >
-      </v-img>
-    </v-row>
+        <v-img v-for="(bar, index) in barCount" :gradient="gradient[index]" @click="highlightNormal(bar)" :key="index" class="mb-7" max-width="177" src="@/assets/singlebar.jpg"
+          ><p class="ml-1 my-0 font-weight-bold">
+            {{ getTimeSigNumeratorOf(bar) }}
+          </p>
+          <p class="ml-1 my-0 font-weight-bold">
+            {{ getTimeSigDenominatorOf(bar) }}
+          </p>
+
+          <v-btn class="mt-6 mr-n3" absolute top right small fab v-if="subButtonStatus.visibility" @click="subButtonStatus.executeFunction(bar)"
+            ><v-icon>{{ subButtonStatus.icon }}</v-icon></v-btn
+          >
+        </v-img>
+      </v-row>
+    </v-container>
   </div>
 </template>
 <script>
 import { getters } from "@/store/store.js";
-
+import { bus } from "../main";
 export default {
   name: "MusicRendering",
   data() {
     return {
+      lastBarSelectedIndex: -1,
       gradient: [],
-      previousBarIndex: -1,
     };
   },
   methods: {
@@ -43,10 +45,10 @@ export default {
     highlight(barNumber, colour) {
       this.gradient.splice(barNumber - 1, 1, colour);
 
-      if (this.previousBarIndex !== -1) {
-        this.gradient.splice(this.previousBarIndex, 1, "");
+      if (this.lastBarSelectedIndex !== -1) {
+        this.gradient.splice(this.lastBarSelectedIndex, 1, "");
       }
-      this.previousBarIndex = barNumber - 1;
+      this.lastBarSelectedIndex = barNumber - 1;
     },
     highlightNormal(barNumber) {
       this.highlight(barNumber, "rgba(100,115,201,.33), rgba(100,115,201,.33)");
@@ -62,6 +64,11 @@ export default {
     barCount: function() {
       return getters.getBarCount();
     },
+  },
+  created() {
+    bus.$on("change-gradient-array", (data) => {
+      this.gradient = data;
+    });
   },
   props: ["subButtonStatus"],
 };
