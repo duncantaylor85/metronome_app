@@ -202,7 +202,7 @@ class RecursivePlay {
    * @param {PositionController} positionController this playback unit's position controller
    */
   constructor(clickProvider, positionController) {
-    this.cancelObject = null;
+    this.cancelHandle = null;
     this.currentIndex = null;
     this.clickProvider = clickProvider;
     this.positionController = positionController;
@@ -269,7 +269,7 @@ class RecursivePlay {
     window.clearTimeout(this.cancelObject)
     this.positionController.rewind()
   }
-  
+
   /**
    * Stop playing and store the current position.
    */
