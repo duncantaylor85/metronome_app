@@ -43,10 +43,17 @@ export default {
     },
 
     highlight(barNumber, colour) {
-      this.gradient.splice(barNumber - 1, 1, colour);
-
-      if (this.lastBarSelectedIndex !== -1) {
-        this.gradient.splice(this.lastBarSelectedIndex, 1, "");
+      if (barNumber - 1 === this.lastBarSelectedIndex) {
+        if (this.gradient[barNumber - 1] === colour) {
+          this.gradient.splice(barNumber - 1, 1, "");
+        } else {
+          this.gradient.splice(barNumber - 1, 1, colour);
+        }
+      } else {
+        this.gradient.splice(barNumber - 1, 1, colour);
+        if (this.lastBarSelectedIndex !== -1) {
+          this.gradient.splice(this.lastBarSelectedIndex, 1, "");
+        }
       }
       this.lastBarSelectedIndex = barNumber - 1;
     },
