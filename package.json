@@ -13,9 +13,12 @@
     "vuetify": "^2.2.19"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.10.2",
     "@vue/cli-plugin-babel": "~4.2.0",
     "@vue/cli-plugin-router": "~4.2.0",
     "@vue/cli-service": "~4.2.0",
+    "babel-jest": "^26.0.1",
+    "jest": "^26.0.1",
     "sass": "^1.19.0",
     "sass-loader": "^8.0.0",
     "vue-cli-plugin-vuetify": "~2.0.5",
