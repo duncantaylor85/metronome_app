@@ -1,7 +1,7 @@
 import { getters } from "@/store/store.js";
 import { BeatSequenceTimeRepresentation, BeatTimeRepresentation } from "@/libraries/DomainModel.js";
 
-export { PlaybackCoordinator };
+export { PositionController, CountInController, PlaybackCoordinator };
 
 
 /**
