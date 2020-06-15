@@ -73,8 +73,10 @@ export default {
     },
   },
   created() {
-    bus.$on("change-gradient-array", (data) => {
-      this.gradient = data;
+    bus.$on("change-gradient-array", () => {
+      let tempArray = new Array(this.barCount);
+      let gradient = tempArray.fill("");
+      this.gradient = gradient;
     });
   },
   props: ["subButtonStatus"],
