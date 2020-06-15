@@ -51,7 +51,7 @@ export default {
         if (this.gradient[barNumberIndex] === colour) {
           this.insertHighlight(barNumberIndex, "");
         } else {
-          this.insertHighlight(barNumberIndex, 1, colour);
+          this.insertHighlight(barNumberIndex, colour);
         }
       } else {
         this.insertHighlight(barNumberIndex, colour);
