@@ -70,10 +70,7 @@ export default {
   methods: {
     deleteBar(barNumber) {
       mutators.deleteBar(barNumber);
-      let numberOfBars = getters.getBarCount();
-      let tempArray = new Array(numberOfBars);
-      let gradient = tempArray.fill("");
-      bus.$emit("change-gradient-array", gradient);
+      bus.$emit("change-gradient-array");
     },
 
     displayAddBarsDialog() {

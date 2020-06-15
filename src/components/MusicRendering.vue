@@ -41,14 +41,25 @@ export default {
       // replaces $store.getters
       return getters.getTimeSigOf(bar).getDenominatorAsNumber();
     },
+    insertHighlight(barNumberIndex, stringColour) {
+      this.gradient.splice(barNumberIndex, 1, stringColour);
+    },
 
     highlight(barNumber, colour) {
-      this.gradient.splice(barNumber - 1, 1, colour);
-
-      if (this.lastBarSelectedIndex !== -1) {
-        this.gradient.splice(this.lastBarSelectedIndex, 1, "");
+      let barNumberIndex = barNumber - 1;
+      if (barNumberIndex === this.lastBarSelectedIndex) {
+        if (this.gradient[barNumberIndex] === colour) {
+          this.insertHighlight(barNumberIndex, "");
+        } else {
+          this.insertHighlight(barNumberIndex, colour);
+        }
+      } else {
+        this.insertHighlight(barNumberIndex, colour);
+        if (this.lastBarSelectedIndex !== -1) {
+          this.insertHighlight(this.lastBarSelectedIndex, "");
+        }
       }
-      this.lastBarSelectedIndex = barNumber - 1;
+      this.lastBarSelectedIndex = barNumberIndex;
     },
     highlightNormal(barNumber) {
       this.highlight(barNumber, "rgba(100,115,201,.33), rgba(100,115,201,.33)");
@@ -66,8 +77,10 @@ export default {
     },
   },
   created() {
-    bus.$on("change-gradient-array", (data) => {
-      this.gradient = data;
+    bus.$on("change-gradient-array", () => {
+      let tempArray = new Array(this.barCount);
+      let gradient = tempArray.fill("");
+      this.gradient = gradient;
     });
   },
   props: ["subButtonStatus"],
