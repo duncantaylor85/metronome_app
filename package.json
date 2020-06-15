@@ -4,10 +4,16 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "test": "jest"
   },
   "dependencies": {
+    "@babel/preset-env": "^7.10.2",
+    "@vue/test-utils": "^1.0.3",
+    "babel-jest": "^26.0.1",
+    "babel-preset-env": "^1.7.0",
     "core-js": "^3.6.4",
+    "jest": "^26.0.1",
     "vue": "^2.6.11",
     "vue-router": "^3.1.5",
     "vuetify": "^2.2.19"
