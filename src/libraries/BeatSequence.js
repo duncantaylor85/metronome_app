@@ -3,9 +3,10 @@ export { BeatSequenceTimeRepresentation, BeatTimeRepresentation }
 class BeatSequenceTimeRepresentation {
   /**
    *
-   * @param {Array.<BeatTimeRepresentation>} beats
+   * @param {Array.<BeatTimeRepresentation>} beats must contain at least one beat!
    */
   constructor(beats) {
+    if (!beats) throw "Tried to create BSTR with empty beats array"
     this.beats = beats
   }
 
@@ -63,8 +64,10 @@ class BeatSequenceTimeRepresentation {
    * @private
    */
   getFirstBarCountIn() {
+    // one element will always exist due to precondition in constructor
     // relying on filtering being in-order, but should be fine
-    return this.beats.filter(beat => beat.associatedBarNumber === 1).map(beat => new BeatTimeRepresentation(beat.durationInMillis, true, beat.isFirstBeatOfBar, beat.associatedBarNumber))
+    let firstBarNum = this.beats[0].associatedBarNumber
+    return this.beats.filter(beat => beat.associatedBarNumber === firstBarNum).map(beat => new BeatTimeRepresentation(beat.durationInMillis, true, beat.isFirstBeatOfBar, beat.associatedBarNumber))
   }
 
   /**
