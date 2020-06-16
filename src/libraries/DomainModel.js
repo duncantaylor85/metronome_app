@@ -29,7 +29,9 @@ class BPM {
   getPerMinute() {
     return this.perMinute
   }
-
+  getDenominatorAsNumber() {
+    return BasicDuration.toInteger(this.denominator)
+  }
   copy() {
     return new BPM(this.perMinute, this.denominator)
   }
@@ -81,9 +83,15 @@ class Bar {
     this.tempo = tempo
   }
 
+  /**
+   * @returns {TimeSignature}
+   */
   getTimeSig() {
     return this.timeSig.copy()
   }
+  /**
+   * @returns {BPM}
+   */
   getTempo() {
     return this.tempo.copy()
   }

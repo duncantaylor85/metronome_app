@@ -97,7 +97,17 @@ class BeatTimeRepresentation {
     this._associatedBarNumber = associatedBarNumber
   }
 
-
+  /**
+   *
+   * @param {BeatTimeRepresentation} other
+   * @returns {Boolean} do these BTRs have value equality?
+   */
+  equals(other) {
+    return this.associatedBarNumber === other.associatedBarNumber &&
+      this.durationInMillis === other.durationInMillis &&
+      this.isCountIn === other.isCountIn &&
+      this.isFirstBeatOfBar === other.isFirstBeatOfBar
+  }
   /**
    * @returns {Number}
    */
@@ -125,4 +135,6 @@ class BeatTimeRepresentation {
   get associatedBarNumber() {
     return this._associatedBarNumber
   }
+
+
 }
