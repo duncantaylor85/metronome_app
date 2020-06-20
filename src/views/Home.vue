@@ -73,11 +73,9 @@ export default {
   watch: {
     countInToggle(newVal) {
       this.countInInterface.toggleCountIn(newVal);
-      console.log(this.countInInterface);
     },
     countInLength(newVal) {
       this.countInInterface.changeCountInLength(newVal);
-      console.log(this.countInInterface);
     },
   },
   methods: {
