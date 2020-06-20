@@ -6,8 +6,8 @@
         <audio ref="lowBeep" src="@/assets/lowBeep.mp3"></audio>
         <v-card class="d-flex pr-2 pt-1" height="100">
           <div class="mx-2 mt-2 mr-4">
-            <v-select :items="countInNumber" type="number" label="How many bars count in?"></v-select>
-            <v-switch v-model="countIn" input-value="true" inset label="Count-in"></v-switch>
+            <v-select v-model="countInLength" :items="countInLengths" type="number" label="How many bars count in?"></v-select>
+            <v-switch v-model="countInToggle" inset label="Count-in"></v-switch>
           </div>
 
           <div class="pt-1">
@@ -25,7 +25,7 @@
     </v-app-bar>
     <v-content>
       <v-container fluid>
-        <MusicRendering :subButtonStatus="menuData.subButtonStatus" :key="rerender" ref="musicRenderer" />
+        <MusicRendering :subButtonStatus="menuData.subButtonStatus" :key="rerender" ref="musicRendering" />
         <AddBarsDialog :toggleAddBarsModal="addBarsData.dialog" @close-dialog="closeAddDialog" />
         <EditBarDialog :toggleEditBarModal="editBarData.dialog" :barNumber="editBarData.barNumber" :barTimeSig="editBarData.barTimeSig" @close-dialog="closeEditDialog" />
       </v-container>
@@ -63,17 +63,25 @@ export default {
       },
       rerender: true,
       playbackCoordinator: null,
-      countIn: false,
-      countInNumber: [1, 2, 4, 8],
+      countInToggle: false,
+      countInLengths: [1, 2, 4, 8],
+      countInLength: 2,
+      barHighlighter: null,
+      countInInterface: null,
     };
+  },
+  watch: {
+    countInToggle(newVal) {
+      this.countInInterface.toggleCountIn(newVal);
+    },
+    countInLength(newVal) {
+      this.countInInterface.changeCountInLength(newVal);
+    },
   },
   methods: {
     deleteBar(barNumber) {
       mutators.deleteBar(barNumber);
-      let numberOfBars = getters.getBarCount();
-      let tempArray = new Array(numberOfBars);
-      let gradient = tempArray.fill("");
-      bus.$emit("change-gradient-array", gradient);
+      bus.$emit("change-gradient-array");
     },
 
     displayAddBarsDialog() {
@@ -96,7 +104,13 @@ export default {
       this.menuData.subButtonStatus = this.menuData.menuButtons[mode].subButtonStatus;
     },
   },
-  beforeCreate() {
+  beforeCreate() {},
+  created() {
+    setupMenuButtons(this);
+  },
+  beforeMount() {},
+  mounted() {
+    const barHighlighter = this.$refs.musicRendering.getBarHighlighter();
     const timeRepresentationProvider = {
       getTimeRepresentation: getters.getTimeRepresentation,
     };
@@ -110,14 +124,10 @@ export default {
         lowBeep.play();
       },
     };
-    const barHighlighter = this.$refs.musicRenderer.getBarHighlighter();
+
     const playbackCoordinator = new PlaybackCoordinator(clickProvider, timeRepresentationProvider, barHighlighter);
     this.playbackCoordinator = playbackCoordinator;
-  },
-  created() {
-    setupMenuButtons(this);
-  },
-  mounted() {
+    this.countInInterface = this.playbackCoordinator.getCountInInterface();
     selectDefaultTab(this);
   },
   computed: {

@@ -46,10 +46,8 @@ export default {
         bpm: new BPM(120, BasicDuration.fromInteger(this.addBarsData.denominatorSelected)),
         amountOfBars: this.addBarsData.amountOfBars,
       });
-      let numberOfBars = getters.getBarCount();
-      let tempArray = new Array(numberOfBars);
-      let gradient = tempArray.fill("");
-      bus.$emit("change-gradient-array", gradient);
+
+      bus.$emit("change-gradient-array");
       this.closeDialog();
     },
     closeDialog() {
