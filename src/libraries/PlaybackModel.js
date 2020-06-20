@@ -3,7 +3,6 @@ import { BeatSequenceTimeRepresentation, BeatTimeRepresentation } from "@/librar
 
 export { PositionController, CountInController, PlaybackCoordinator };
 
-
 /**
  * Controls whether or not a count-in is occurring, how long it is, and adding the count-in to the beat sequence
  */
@@ -30,7 +29,7 @@ class CountInController {
    * @param {Boolean} newValue is the count-in enabled or disabled?
    */
   toggleCountIn(newValue) {
-    this.enabled = newValue
+    this.enabled = newValue;
   }
 
   /**
@@ -38,7 +37,7 @@ class CountInController {
    * @param {Number} barCount number of bars of count-in
    */
   changeCountInLength(barCount) {
-    this.countInLength = barCount
+    this.countInLength = barCount;
   }
 }
 
@@ -48,7 +47,7 @@ class CountInController {
 class PositionController {
   /**
    * Creates a new position controller that uses barHighlighterInterface to send highlight messages to the music rendering
-   * @param {{ highlightCountIn: (barNumber: Number) => void, highlightNormal: (barNumber: Number) => void}} barHighligherInterface 
+   * @param {{ highlightCountIn: (barNumber: Number) => void, highlightNormal: (barNumber: Number) => void}} barHighligherInterface
    * an interface allowing highlighting of a given bar
    * @param {CountInController} countInController the count-in controller for this playback unit
    */
@@ -74,17 +73,17 @@ class PositionController {
    * Set user-selected position and current position to the beginning of the full bar sequence, highlight first bar
    */
   resetAllPositions() {
-    this.currentBar = 1
-    this.currentUserSelectedBar = 1
-    this.musicRenderer.highlightNormal(1)
+    this.currentBar = 1;
+    this.currentUserSelectedBar = 1;
+    this.musicRenderer.highlightNormal(1);
   }
 
   /**
    * Set current bar position to user-selected position, highlight current bar
    */
   restoreUserPosition() {
-    this.currentBar = this.currentUserSelectedBar
-    this.musicRenderer.highlightNormal(barNumber)
+    this.currentBar = this.currentUserSelectedBar;
+    this.musicRenderer.highlightNormal(barNumber);
   }
 
   /**
@@ -92,8 +91,8 @@ class PositionController {
    * @param {Number} barNumber bar to change to
    */
   changePositionNormal(barNumber) {
-    this.currentBar = barNumber
-    this.musicRenderer.highlightNormal(barNumber)
+    this.currentBar = barNumber;
+    this.musicRenderer.highlightNormal(barNumber);
   }
 
   /**
@@ -101,8 +100,8 @@ class PositionController {
    * @param {Number} barNumber bar to change to
    */
   changePositionCountIn(barNumber) {
-    this.currentBar = barNumber
-    this.musicRenderer.highlightCountIn(barNumber)
+    this.currentBar = barNumber;
+    this.musicRenderer.highlightCountIn(barNumber);
   }
 
   /**
@@ -112,11 +111,11 @@ class PositionController {
    */
   changeUserPosition(barNumber) {
     // TODO
-    console.log("PlaybackModel.js::PositionController.changeUserPosition() needs playback paused, so the interface needs to pause itself")
+    console.log("PlaybackModel.js::PositionController.changeUserPosition() needs playback paused, so the interface needs to pause itself");
     // this.playbackCoordinator.pausePlaying()
-    this.currentUserSelectedBar = barNumber
-    this.currentBar = barNumber
-    this.musicRenderer.highlightNormal(barNumber)
+    this.currentUserSelectedBar = barNumber;
+    this.currentBar = barNumber;
+    this.musicRenderer.highlightNormal(barNumber);
   }
 
   /**
@@ -124,22 +123,21 @@ class PositionController {
    */
   rewind() {
     if (this.currentBar === this.currentUserSelectedBar) {
-      this.resetAllPositions()
-    }
-    else {
-      this.restoreUserPosition()
+      this.resetAllPositions();
+    } else {
+      this.restoreUserPosition();
     }
   }
 }
 
 /**
- * Provides the interface for playback, pause, rewind; also generates interfaces for the count-in controller and user position controller 
+ * Provides the interface for playback, pause, rewind; also generates interfaces for the count-in controller and user position controller
  */
 class PlaybackCoordinator {
   /**
-   * 
+   *
    * @param {{ playHigh: () => void, playLow: () => void }} clickProvider interface to audio playback for high and low clicks
-   * @param {{ getTimeRepresentation: () => BeatSequenceTimeRepresentation }} timeRepProvider interface to a provider of the current bar sequence's 
+   * @param {{ getTimeRepresentation: () => BeatSequenceTimeRepresentation }} timeRepProvider interface to a provider of the current bar sequence's
    * beat sequence time representation
    * @param {{ highlightCountIn: (barNumber: Number) => void, highlightNormal: (barNumber: Number) => void}} barHighlighter an interface allowing highlighting of a given bar
    */
@@ -156,8 +154,8 @@ class PlaybackCoordinator {
   getCountInInterface() {
     return {
       toggleCountIn: this.countInController.toggleCountIn,
-      changeCountInLength: this.countInController.changeCountInLength
-    }
+      changeCountInLength: this.countInController.changeCountInLength,
+    };
   }
 
   /**
@@ -165,17 +163,17 @@ class PlaybackCoordinator {
    */
   getPositionInterface() {
     return {
-      changeUserPosition: this.positionController.changeUserPosition
-    }
+      changeUserPosition: this.positionController.changeUserPosition,
+    };
   }
 
   /**
    * Stop playing the current bar sequence, and rewind the playback to the user position; if already at the user position, rewind to the beginning
    */
   rewind() {
-    this.recursivePlay.rewindSequence()
+    this.recursivePlay.rewindSequence();
   }
-  
+
   /**
    * Start playing the current bar sequence from the current position
    */
@@ -189,7 +187,7 @@ class PlaybackCoordinator {
    * Stop playing the current bar sequence, but leave the current position at the current bar.
    */
   pausePlaying() {
-    this.recursivePlay.pauseSequence()
+    this.recursivePlay.pauseSequence();
   }
 }
 
@@ -207,7 +205,6 @@ class RecursivePlay {
     this.clickProvider = clickProvider;
     this.positionController = positionController;
     this.bSTR = null;
-    this.musicRenderer = musicRenderer;
   }
 
   /**
@@ -215,24 +212,24 @@ class RecursivePlay {
    * @param {BeatSequenceTimeRepresentation} fullSequence the complete beat sequence, trimmed and including count-ins, to play
    */
   playSequence(fullSequence) {
-    this.bSTR = fullSequence
-    this.currentIndex = 0
-    this.play()
+    this.bSTR = fullSequence;
+    this.currentIndex = 0;
+    this.play();
   }
 
   /**
-   * Plays the current beat at the appropriate pitch, highlights the appropriate bar, and if not at the end of the 
+   * Plays the current beat at the appropriate pitch, highlights the appropriate bar, and if not at the end of the
    * bar sequence, delays for the current beat length and recursively calls itself for the next beat
    */
   play() {
-    let beat = this.bSTR.getBeat(this.currentIndex)
-    this.playBeat(this.currentIndex)
-    this.highlight(this.currentIndex)
+    let beat = this.bSTR.getBeat(this.currentIndex);
+    this.playBeat(this.currentIndex);
+    this.highlight(this.currentIndex);
     if (!this.bSTR.isFinalBeat(this.currentIndex)) {
       this.cancelObject = window.setTimeout(() => {
-        this.currentIndex++
-        this.play()
-      }, beat.durationInMillis)
+        this.currentIndex++;
+        this.play();
+      }, beat.durationInMillis);
     }
   }
 
@@ -242,10 +239,9 @@ class RecursivePlay {
    */
   playBeat(beat) {
     if (beat.isFirstBeatOfBar) {
-      this.clickProvider.playHigh()
-    }
-    else {
-      this.clickProvider.playLow()
+      this.clickProvider.playHigh();
+    } else {
+      this.clickProvider.playLow();
     }
   }
 
@@ -255,10 +251,9 @@ class RecursivePlay {
    */
   highlight(beat) {
     if (beat.isCountIn) {
-      this.positionController.changePositionCountIn(beat.associatedBarNumber)
-    } 
-    else {
-      this.positionController.changePositionNormal(beat.associatedBarNumber)
+      this.positionController.changePositionCountIn(beat.associatedBarNumber);
+    } else {
+      this.positionController.changePositionNormal(beat.associatedBarNumber);
     }
   }
 
@@ -266,16 +261,16 @@ class RecursivePlay {
    * Stop playing and rewind, either to the user position or, if already there, to the beginning.
    */
   rewindSequence() {
-    window.clearTimeout(this.cancelObject)
-    this.positionController.rewind()
+    window.clearTimeout(this.cancelObject);
+    this.positionController.rewind();
   }
 
   /**
    * Stop playing and store the current position.
    */
   pauseSequence() {
-    window.clearTimeout(this.cancelObject)
-    let barNumber = this.bSTR.getBeat(this.currentIndex).associatedBarNumber
-    this.positionController.changePositionNormal(barNumber)
+    window.clearTimeout(this.cancelObject);
+    let barNumber = this.bSTR.getBeat(this.currentIndex).associatedBarNumber;
+    this.positionController.changePositionNormal(barNumber);
   }
 }
