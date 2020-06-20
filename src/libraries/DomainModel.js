@@ -2,65 +2,141 @@ import { BeatSequenceTimeRepresentation, BeatTimeRepresentation } from "@/librar
 
 export { TimeSignature, BPM, BarSequence, BasicDuration, SimpleBeatSequenceCreator }
 
+/**
+ * Class representing a time signature of given numerator and denominator
+ */
 class TimeSignature {
+  /**
+   * 
+   * @param {Number} numerator should be a positive integer
+   * @param {BasicDuration} denominator should be one of _1st, _2nd, _4th, _8th, _16th, _32nd
+   */
   constructor(numerator, denominator) {
     this.numerator = numerator
     this.denominator = denominator
   }
 
+  /**
+   * @returns {Number} positive integer representing the numerator
+   */
   getNumerator() {
     return this.numerator
   }
 
+  /**
+   * @returns {Number} integer in {1,2,4,8,16,32} representing the denominator as displayed
+   */
   getDenominatorAsNumber() {
     return BasicDuration.toInteger(this.denominator)
   }
 
+  /**
+   * @returns {TimeSignature} deep copy of this time signature object
+   */
   copy() {
     return new TimeSignature(this.numerator, this.denominator)
   }
 }
+
+/**
+ * Class representing a metronome marking of beats per minute,
+ * and the duration of each beat (of 1st, 2nd, 4th, 8th, 16th, 32nd)
+ */
 class BPM {
+  /**
+   * @param {Number} perMinute how many beats of this denominator per minute?
+   * @param {BasicDuration} denominator the duration of each beat
+   */
   constructor(perMinute, denominator) {
     this.perMinute = perMinute
     this.denominator = denominator
   }
 
+  /**
+   * @returns {Number} number of beats of the given duration per minute
+   */
   getPerMinute() {
     return this.perMinute
   }
+  /**
+   * @returns {BasicDuration} duration marking of this metronome mark
+   */
   getDenominatorAsNumber() {
     return BasicDuration.toInteger(this.denominator)
   }
+
+  /**
+   * @returns {BPM} returns a deep copy of this metronome marking
+   */
   copy() {
     return new BPM(this.perMinute, this.denominator)
   }
 }
+
+/**
+ * Represents the sequence of bars the user is currently working on.
+ */
 class BarSequence {
   constructor() {
     this.bars = []
   }
-
+  /**
+   * Adds count bars of the given time signature to the end of the bar
+   * sequence, or if empty, creates count bars as specified.
+   * @param {TimeSignature} timeSig 
+   * @param {BPM} bpm 
+   * @param {Number} count 
+   * @returns {void}
+   */
   addBarsToEnd(timeSig, bpm, count) {
     for (let i = 1; i <= count; i++) {
       this.bars.push(new Bar(timeSig, bpm))
     }
   }
 
+  /**
+   * Replace the bar at the given bar number with a different bar, using
+   * the given time signature and metronome marking
+   * @param {Number} barNumber The bar to replace
+   * @param {TimeSignature} timeSig the time signature for the replacement bar
+   * @param {BPM} bpm the metronome marking of the replacement bar
+   * @returns {void}
+   */
   replaceBar(barNumber, timeSig, bpm) {
     this.bars[barNumber - 1] = new Bar(timeSig, bpm)
   }
 
+  /**
+   * @returns {Number} the number of bars in this bar sequence
+   */
   getBarCount() {
     return this.bars.length
   }
 
+  /**
+   * Returns a copy of the time signature of the bar at the given bar number
+   * @param {Number} barNumber the bar number to get the time signature for
+   * @returns {TimeSignature} returns a copy of the time signature of the bar at the given bar number
+   */
   getTimeSigOf(barNumber) {
     return this.bars[barNumber - 1].getTimeSig()
   }
+
+  /**
+   * Returns a copy of the tempo marking of the bar at the given bar number
+   * @param {Number} barNumber the bar number to get the tempo marking for
+   * @returns {BPM} returns a copy of the tempo marking of the bar at the given bar number
+   */
   getTempoOf(barNumber) {
     return this.bars[barNumber - 1].getTempo()
   }
+
+  /**
+   * Removes the bar at the given bar number from the bar sequence; following
+   * bars are renumbered accordingly.
+   * @param {Number} barNumber Bar number of the bar to remove
+   * @returns {void}
+   */
   deleteBar(barNumber) {
     this.bars = this.bars.filter((bar, index) => {
       return index != barNumber - 1
@@ -130,7 +206,7 @@ const BasicDuration = {
 class IBeatSequenceCreator {
   constructor() {}
   /**
-   *
+   * @public
    * @param {BarSequence} barSequence
    * @returns {BeatSequenceTimeRepresentation}
    */
@@ -141,7 +217,7 @@ class IBeatSequenceCreator {
 
 class SimpleBeatSequenceCreator extends IBeatSequenceCreator {
   /**
-   *
+   * @public
    * @param {BarSequence} barSequence
    * @returns {BeatSequenceTimeRepresentation} BeatSequenceTimeRepresentation
    */
@@ -151,7 +227,7 @@ class SimpleBeatSequenceCreator extends IBeatSequenceCreator {
   }
 
   /**
-   *
+   * @private
    * @param {Bar} bar
    * @returns {Array.<BeatTimeRepresentation>}
    */
