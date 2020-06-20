@@ -207,7 +207,6 @@ class RecursivePlay {
     this.clickProvider = clickProvider;
     this.positionController = positionController;
     this.bSTR = null;
-    this.musicRenderer = musicRenderer;
   }
 
   /**
