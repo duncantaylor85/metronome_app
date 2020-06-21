@@ -1,6 +1,5 @@
-import { BarSeqence } from "@/libraries/DomainModel.js"
 import { BeatSequenceTimeRepresentation, BeatTimeRepresentation } from "@/libraries/BeatSequence.js"
-import { BarSequence, TimeSignature, BasicDuration, BPM, SimpleBeatSequenceCreator } from "../src/libraries/DomainModel"
+import { BarSequence, TimeSignature, Bar, BasicDuration, BPM, SimpleBeatSequenceCreator } from "../src/libraries/DomainModel"
 
 /**
  * Creates a BSTR from a varargs of beats
@@ -11,6 +10,15 @@ function bstr(...beats) {
   let btr = beats.map(([d, b1, b2, b]) => new BeatTimeRepresentation(d, b1, b2, b))
   return new BeatSequenceTimeRepresentation(btr)
 }
+
+function bs(...bars) {
+  let bSeq = new BarSequence()
+  let barArray = bars.map(([[tN,tDen], [bpmN, bpmDen]]) => new Bar(new TimeSignature(tN, BasicDuration.fromInteger(tDen)), new BPM(bpmN, BasicDuration.fromInteger(bpmDen))))
+  bSeq.bars = barArray
+  return bSeq
+}
+
+
 
 /*****************************************************************************
  * Creation of BeatSequenceTimeRepresentation from a SimpleBeatSequenceCreator
@@ -216,17 +224,92 @@ test("TimeSignature converts denominator to an integer", () => {
   let ts = new TimeSignature(4, BasicDuration._4th)
   expect(ts.getDenominatorAsNumber()).toBe(4)
 
-  ts = new TimeSignature(4, BasicDuration._32nd)
-  expect(ts.getDenominatorAsNumber()).toBe(32)
+  let ts2 = new TimeSignature(4, BasicDuration._32nd)
+  expect(ts2.getDenominatorAsNumber()).toBe(32)
 })
 
-test("TimeSignature copies correctly", () => {
+test("TimeSignature copies / clones correctly", () => {
   let ts = new TimeSignature(4, BasicDuration._4th)
   let ts2 = ts.copy()
   expect(ts2).toEqual(ts)
 
   ts.numerator = 3
   expect(ts2).not.toEqual(ts)
+})
+
+
+test("BPM converts denominator to an integer", () => {
+  let bpm = new BPM(120, BasicDuration._4th)
+  expect(bpm.getDenominatorAsNumber()).toBe(4)
+
+  let bpm2 = new BPM(120, BasicDuration._32nd)
+  expect(bpm2.getDenominatorAsNumber()).toBe(32)
+})
+
+test("BPM copies / clones correctly", () => {
+  let bpm = new BPM(120, BasicDuration._4th)
+  let bpm2 = bpm.copy()
+  expect(bpm).toEqual(bpm2)
+  
+  bpm.denominator = BasicDuration._32nd
+  expect(bpm).not.toEqual(bpm2)
+})
+
+test("Bar correctly clones its elements during getters", () => {
+  let ts = new TimeSignature(120, BasicDuration._4th)
+  let bpm = new BPM(120, BasicDuration._4th)
+  
+  let bar = new Bar(ts, bpm)
+  let bts = bar.getTimeSig()
+  let bbpm = bar.getTempo()
+
+  expect(ts).toEqual(bts)
+  expect(bpm).toEqual(bbpm)
+
+  ts.denominator = BasicDuration._32nd
+  bpm.denominator = BasicDuration._8th
+
+  expect(ts).not.toEqual(bts)
+  expect(bpm).not.toEqual(bbpm)
+})
+
+
+
+test("BarSequence adds bars from none", () => {
+  let barSeq = new BarSequence()
+  barSeq.addBarsToEnd(new TimeSignature(4, BasicDuration._4th), new BPM(120, BasicDuration._4th), 2)
+
+  expect(barSeq.getBarCount()).toBe(2)
+  expect(barSeq).toEqual(bs([[4,4], [120,4]], [[4,4], [120,4]]))
+})
+
+
+test("BarSequence adds bars to existing", () => {
+  let barSeq = new BarSequence()
+  barSeq.addBarsToEnd(new TimeSignature(4, BasicDuration._4th), new BPM(120, BasicDuration._4th), 2)
+
+  expect(barSeq.getBarCount()).toBe(2)
+  expect(barSeq).toEqual(bs([[4,4], [120,4]], [[4,4], [120,4]]))
+
+  barSeq.addBarsToEnd(new TimeSignature(3, BasicDuration._4th), new BPM(60, BasicDuration._8th), 2)
+  expect(barSeq.getBarCount()).toBe(4)
+  expect(barSeq).toEqual(bs([[4,4], [120,4]], [[4,4], [120,4]], [[3,4], [60,8]], [[3,4], [60,8]]))
+})
+
+
+
+test("", () => {
+  
+})
+
+
+test("", () => {
+  
+})
+
+
+test("", () => {
+  
 })
 
 

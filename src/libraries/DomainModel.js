@@ -1,6 +1,6 @@
 import { BeatSequenceTimeRepresentation, BeatTimeRepresentation } from "@/libraries/BeatSequence.js"
 
-export { TimeSignature, BPM, BarSequence, BasicDuration, SimpleBeatSequenceCreator }
+export { TimeSignature, BPM, BarSequence, Bar, BasicDuration, SimpleBeatSequenceCreator }
 
 /**
  * Class representing a time signature of given numerator and denominator
