@@ -61,7 +61,7 @@ class PositionController {
   /**
    * Trims the front of the BSTR until the currently selected bar is the first element, then prepends the count-in bars
    * @param {BeatSequenceTimeRepresentation} bSTR the raw beat sequence for playback, untrimmed and without a count-in
-   * @returns the input beat sequence, taken from the current bar number, with the count-in of appropriate length prepended
+   * @returns {BeatSequenceTimeRepresentation} the input beat sequence, taken from the current bar number, with the count-in of appropriate length prepended
    */
   createPlayableTimeRepresentation(bSTR) {
     const trimmedBarSeq = bSTR.trim(this.currentUserSelectedBar);

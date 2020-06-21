@@ -298,21 +298,112 @@ test("BarSequence adds bars to existing", () => {
 
 
 
-test("", () => {
-  
+test("BarSequence replaces bar at start", () => {
+  let barSeq = new BarSequence()
+  barSeq.addBarsToEnd(new TimeSignature(4, BasicDuration._4th), new BPM(120, BasicDuration._4th), 1)
+  barSeq.addBarsToEnd(new TimeSignature(3, BasicDuration._8th), new BPM(120, BasicDuration._4th), 1)
+
+  expect(barSeq).toEqual(bs([[4,4],[120,4]], [[3,8], [120,4]]))
+
+  barSeq.replaceBar(1, new TimeSignature(2, BasicDuration._8th), new BPM(60, BasicDuration._2nd))
+
+  expect(barSeq).toEqual(bs([[2,8],[60,2]], [[3,8], [120,4]]))
 })
 
 
-test("", () => {
-  
+test("BarSequence replaces bar at end", () => {
+  let barSeq = new BarSequence()
+  barSeq.addBarsToEnd(new TimeSignature(4, BasicDuration._4th), new BPM(120, BasicDuration._4th), 1)
+  barSeq.addBarsToEnd(new TimeSignature(3, BasicDuration._16th), new BPM(120, BasicDuration._16th), 1)
+
+  expect(barSeq).toEqual(bs([[4,4],[120,4]], [[3,16], [120,16]]))
+
+  barSeq.replaceBar(2, new TimeSignature(2, BasicDuration._8th), new BPM(60, BasicDuration._2nd))
+
+  expect(barSeq).toEqual(bs([[4,4],[120,4]], [[2,8], [60,2]]))
 })
 
 
-test("", () => {
-  
+test("BarSequence returns copies / clones of time sig and tempo correctly", () => {
+  let barSeq = new BarSequence()
+  let ts1 = new TimeSignature(4, BasicDuration._4th)
+  let bpm1 = new BPM(120, BasicDuration._4th)
+  let ts2 = new TimeSignature(3, BasicDuration._16th)
+  let bpm2 = new BPM(120, BasicDuration._16th)
+  barSeq.addBarsToEnd(ts1, bpm1, 1)
+  barSeq.addBarsToEnd(ts2, bpm2, 1)
+
+  let ts1a = barSeq.getTimeSigOf(1)
+  let ts2a = barSeq.getTimeSigOf(2)
+  let bpm1a = barSeq.getTempoOf(1)
+  let bpm2a = barSeq.getTempoOf(2)
+
+  ts1.numerator = 8
+  ts2.numerator = 2
+  bpm1.perMinute = 130
+  bpm2.perMinute = 140
+
+  expect(ts1).not.toEqual(ts1a)
+  expect(ts2).not.toEqual(ts2a)
+  expect(bpm1).not.toEqual(bpm1a)
+  expect(bpm2).not.toEqual(bpm2a)
+
 })
 
 
-test("", () => {
-  
+test("Delete bar from beginning", () => {
+  let barSeq = new BarSequence()
+  let ts1 = new TimeSignature(4, BasicDuration._4th)
+  let bpm1 = new BPM(120, BasicDuration._4th)
+  let ts2 = new TimeSignature(3, BasicDuration._16th)
+  let bpm2 = new BPM(80, BasicDuration._16th)
+  let ts3 = new TimeSignature(2, BasicDuration._8th)
+  let bpm3 = new BPM(60, BasicDuration._8th)
+  barSeq.addBarsToEnd(ts1, bpm1, 1)
+  barSeq.addBarsToEnd(ts2, bpm2, 1)
+  barSeq.addBarsToEnd(ts3, bpm3, 1)
+
+  expect(barSeq).toEqual(bs([[4,4],[120,4]], [[3,16],[80,16]], [[2,8],[60,8]]))
+
+  barSeq.deleteBar(1)
+
+  expect(barSeq).toEqual(bs([[3,16],[80,16]], [[2,8],[60,8]]))
+})
+
+test("Delete bar from end", () => {
+  let barSeq = new BarSequence()
+  let ts1 = new TimeSignature(4, BasicDuration._4th)
+  let bpm1 = new BPM(120, BasicDuration._4th)
+  let ts2 = new TimeSignature(3, BasicDuration._16th)
+  let bpm2 = new BPM(80, BasicDuration._16th)
+  let ts3 = new TimeSignature(2, BasicDuration._8th)
+  let bpm3 = new BPM(60, BasicDuration._8th)
+  barSeq.addBarsToEnd(ts1, bpm1, 1)
+  barSeq.addBarsToEnd(ts2, bpm2, 1)
+  barSeq.addBarsToEnd(ts3, bpm3, 1)
+
+  expect(barSeq).toEqual(bs([[4,4],[120,4]], [[3,16],[80,16]], [[2,8],[60,8]]))
+
+  barSeq.deleteBar(2)
+
+  expect(barSeq).toEqual(bs([[4,4],[120,4]], [[2,8],[60,8]]))
+})
+
+test("Delete bar from end", () => {
+  let barSeq = new BarSequence()
+  let ts1 = new TimeSignature(4, BasicDuration._4th)
+  let bpm1 = new BPM(120, BasicDuration._4th)
+  let ts2 = new TimeSignature(3, BasicDuration._16th)
+  let bpm2 = new BPM(80, BasicDuration._16th)
+  let ts3 = new TimeSignature(2, BasicDuration._8th)
+  let bpm3 = new BPM(60, BasicDuration._8th)
+  barSeq.addBarsToEnd(ts1, bpm1, 1)
+  barSeq.addBarsToEnd(ts2, bpm2, 1)
+  barSeq.addBarsToEnd(ts3, bpm3, 1)
+
+  expect(barSeq).toEqual(bs([[4,4],[120,4]], [[3,16],[80,16]], [[2,8],[60,8]]))
+
+  barSeq.deleteBar(3)
+
+  expect(barSeq).toEqual(bs([[4,4],[120,4]], [[3,16],[80,16]]))
 })
