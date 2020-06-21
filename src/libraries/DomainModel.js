@@ -145,33 +145,48 @@ class BarSequence {
 
   // JSDoc doesn't allow imports to be treated as types, hence the explicit name below of BSTR
   /**
-   *
-   * @param {IBeatSequenceCreator} beatSequenceCreator
-   * @returns {BeatSequenceTimeRepresentation} BeatSequenceTimeRepresentation
+   * Return a beat sequence time representation of this bar sequence, with the given
+   * beatSequenceCreator used as rules for creating a specific representation
+   * @param {IBeatSequenceCreator} beatSequenceCreator the beat sequence creation "rules"
+   * @returns {BeatSequenceTimeRepresentation} returns a BeatSequenceTimeRepresentation resulting
+   * from running this bar sequence through the given beat sequence creator
    */
   getTimeRepresentation(beatSequenceCreator) {
     return beatSequenceCreator.createFrom(this)
   }
 }
+/**
+ * Represents a single bar in the bar sequence
+ */
 class Bar {
+  /**
+   * @param {TimeSignature} timeSig time signature of this bar
+   * @param {BPM} tempo metronome marking of this bar
+   */
   constructor(timeSig, tempo) {
     this.timeSig = timeSig
     this.tempo = tempo
   }
 
   /**
-   * @returns {TimeSignature}
+   * @returns {TimeSignature} a copy of the time signature of this bar 
    */
   getTimeSig() {
     return this.timeSig.copy()
   }
   /**
-   * @returns {BPM}
+   * @returns {BPM} a copy of the metronome marking of this bar
    */
   getTempo() {
     return this.tempo.copy()
   }
 }
+
+/**
+ * Represents a basic note duration - 1st, 2nd, 4th, 8th, 16th, 32nd; provides conversion
+ * between integers and the corresponding enumeration property
+ * @enum {Number}
+ */
 const BasicDuration = {
   _1st: 0,
   _2nd: 1,
@@ -179,6 +194,12 @@ const BasicDuration = {
   _8th: 3,
   _16th: 4,
   _32nd: 5,
+
+  /**
+   * Converts an integer in {1,2,4,8,16,32} to the corresponding BasicDuration of _1st, _2nd, _4th, _8th, _16th, _32nd
+   * @param {Number} i integer of {1,2,4,8,16,32} to convert to a BasicDuration
+   * @returns {BasicDuration} the corresponding BasicDuration
+   */
   fromInteger(i) {
     switch (i) {
       case 1:
@@ -197,18 +218,30 @@ const BasicDuration = {
         throw "Tried to get a basic duration of " + i + " which is not one of 1,2,4,8,16,32"
     }
   },
+
+  /**
+   * Converts a BasicDuration of _1st, _2nd, _4th, _8th, _16th, _32nd to the corresponding integer in {1,2,4,8,16,32} to a 
+   * @param {BasicDuration} bd the BasicDuration to convert to the corresponding integer for display
+   * of {1,2,4,8,16,32}
+   * @returns {Number} the corresponding integer in {1,2,4,8,16,32}
+   */
   toInteger(bd) {
     return Math.pow(2, bd)
   },
 }
 
 // Slightly different way of having an explicit interface, since JSDoc isn't working at the moment
+/**
+ * Abstract superclass for beat sequence creators; requires createFrom(barSequence)
+ * @abstract
+ */
 class IBeatSequenceCreator {
   constructor() {}
   /**
+   * Method to implement - takes a bar sequence, returns a beat sequence time representation of that bar sequence
    * @public
-   * @param {BarSequence} barSequence
-   * @returns {BeatSequenceTimeRepresentation}
+   * @param {BarSequence} barSequence bar sequence to transform
+   * @returns {BeatSequenceTimeRepresentation} BeatSequenceTimeRepresentation produced by the transformation
    */
   createFrom(barSequence) {
     throw "Not implemented"
@@ -217,9 +250,11 @@ class IBeatSequenceCreator {
 
 class SimpleBeatSequenceCreator extends IBeatSequenceCreator {
   /**
+   * Transforms a bar sequence into a BeatSequenceTimeRepresentation using the strategy of having
+   * bar.numerator beats of bar.denominator (BasicDuration)
    * @public
-   * @param {BarSequence} barSequence
-   * @returns {BeatSequenceTimeRepresentation} BeatSequenceTimeRepresentation
+   * @param {BarSequence} barSequence bar sequence to transform
+   * @returns {BeatSequenceTimeRepresentation} BeatSequenceTimeRepresentation produced by the transformation
    */
   createFrom(barSequence) {
     let beats = barSequence.bars.map((bar, i) => this.beatsFromBar(bar, i + 1)).flat()
@@ -227,9 +262,10 @@ class SimpleBeatSequenceCreator extends IBeatSequenceCreator {
   }
 
   /**
+   * Convert a given bar to a BSTR using the strategy of bar.numerator beats of bar.denominator.
    * @private
-   * @param {Bar} bar
-   * @returns {Array.<BeatTimeRepresentation>}
+   * @param {Bar} bar bar to convert
+   * @returns {Array.<BeatTimeRepresentation>} array of beats produced by conversion
    */
   beatsFromBar(bar, barNumber) {
     let tempo = bar.getTempo()

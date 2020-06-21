@@ -12,9 +12,10 @@ function bstr(...beats) {
   return new BeatSequenceTimeRepresentation(btr)
 }
 
-/****************************************************************
- * BeatSequenceTimeRepresentation tests
- ****************************************************************/
+/*****************************************************************************
+ * Creation of BeatSequenceTimeRepresentation from a SimpleBeatSequenceCreator
+ * BeatSequenceTimeRepresentation methods
+ *****************************************************************************/
 
 // "simple" BSTR is converted using a SimpleBeatSequenceCreator
 test("Create simple BSTR of a single 4/4 bar at 1/4=120", () => {
@@ -209,5 +210,26 @@ test("BasicDuration conversion BasicDuration->Integer", () => {
 })
 
 /***************************************************************
- * BarSequence tests
+ * BarSequence and other domain class tests
  ***************************************************************/
+test("TimeSignature converts denominator to an integer", () => {
+  let ts = new TimeSignature(4, BasicDuration._4th)
+  expect(ts.getDenominatorAsNumber()).toBe(4)
+
+  ts = new TimeSignature(4, BasicDuration._32nd)
+  expect(ts.getDenominatorAsNumber()).toBe(32)
+})
+
+test("TimeSignature copies correctly", () => {
+  let ts = new TimeSignature(4, BasicDuration._4th)
+  let ts2 = ts.copy()
+  expect(ts2).toEqual(ts)
+
+  ts.numerator = 3
+  expect(ts2).not.toEqual(ts)
+})
+
+
+test("", () => {
+  
+})
