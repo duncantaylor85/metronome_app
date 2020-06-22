@@ -3,9 +3,10 @@ export { BeatSequenceTimeRepresentation, BeatTimeRepresentation }
 class BeatSequenceTimeRepresentation {
   /**
    *
-   * @param {Array.<BeatTimeRepresentation>} beats
+   * @param {Array.<BeatTimeRepresentation>} beats must contain at least one beat!
    */
   constructor(beats) {
+    if (!beats) throw "Tried to create BSTR with empty beats array"
     this.beats = beats
   }
 
@@ -63,8 +64,10 @@ class BeatSequenceTimeRepresentation {
    * @private
    */
   getFirstBarCountIn() {
+    // one element will always exist due to precondition in constructor
     // relying on filtering being in-order, but should be fine
-    return this.beats.filter(beat => beat.associatedBarNumber === 1).map(beat => new BeatTimeRepresentation(beat.durationInMillis, true, beat.isFirstBeatOfBar, beat.associatedBarNumber))
+    let firstBarNum = this.beats[0].associatedBarNumber
+    return this.beats.filter(beat => beat.associatedBarNumber === firstBarNum).map(beat => new BeatTimeRepresentation(beat.durationInMillis, true, beat.isFirstBeatOfBar, beat.associatedBarNumber))
   }
 
   /**
@@ -97,7 +100,17 @@ class BeatTimeRepresentation {
     this._associatedBarNumber = associatedBarNumber
   }
 
-
+  /**
+   *
+   * @param {BeatTimeRepresentation} other
+   * @returns {Boolean} do these BTRs have value equality?
+   */
+  equals(other) {
+    return this.associatedBarNumber === other.associatedBarNumber &&
+      this.durationInMillis === other.durationInMillis &&
+      this.isCountIn === other.isCountIn &&
+      this.isFirstBeatOfBar === other.isFirstBeatOfBar
+  }
   /**
    * @returns {Number}
    */
@@ -125,4 +138,6 @@ class BeatTimeRepresentation {
   get associatedBarNumber() {
     return this._associatedBarNumber
   }
+
+
 }

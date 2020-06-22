@@ -14,3 +14,4 @@ test("Count-in controller example - changing properties", () => {
   expect(cic.enabled).toBe(true)
   expect(cic.countInLength).toBe(5)
 })
+
