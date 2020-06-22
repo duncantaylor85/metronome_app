@@ -81,7 +81,6 @@ export default {
     },
     barNumber(newVal) {
       this.positionInterface.changeUserPosition(newVal);
-      console.log(this.positionInterface);
     },
   },
   methods: {

@@ -71,7 +71,7 @@ export default {
       this.highlight(barNumber, "rgba(211, 223, 0,.33), rgba(211, 223, 0,.33)");
     },
     getBarHighlighter() {
-      return { highlightNormal: this.highlightNormal, highlightCountIn: this.highlightCountIn };
+      return { highlightNormal: (barNum) => this.highlightNormal(barNum), highlightCountIn: (barNum) => this.highlightCountIn(barNum) };
     },
   },
   computed: {
