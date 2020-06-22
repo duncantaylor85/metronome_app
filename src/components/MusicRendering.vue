@@ -5,7 +5,7 @@
         <v-btn small fab v-if="barCount == 0 && subButtonStatus.noBarsBehaviour"
           ><v-icon @click="subButtonStatus.noBarsBehaviour">{{ subButtonStatus.icon }}</v-icon></v-btn
         >
-        <v-img v-for="(bar, index) in barCount" :gradient="gradient[index]" @click="highlightNormal(bar)" :key="index" class="mb-7" max-width="177" src="@/assets/singlebar.jpg"
+        <v-img v-for="(bar, index) in barCount" :gradient="gradient[index]" @click="selectBar(bar)" :key="index" class="mb-7" max-width="177" src="@/assets/singlebar.jpg"
           ><p class="ml-1 my-0 font-weight-bold">
             {{ getTimeSigNumeratorOf(bar) }}
           </p>
@@ -33,6 +33,9 @@ export default {
     };
   },
   methods: {
+    selectBar(barNumber) {
+      this.$emit("setBarNumber", barNumber);
+    },
     getTimeSigNumeratorOf: function(bar) {
       // replaces $store.getters
       return getters.getTimeSigOf(bar).getNumerator();

@@ -115,6 +115,7 @@ class PositionController {
     // this.playbackCoordinator.pausePlaying()
     this.currentUserSelectedBar = barNumber;
     this.currentBar = barNumber;
+    console.log(this.musicRenderer);
     this.musicRenderer.highlightNormal(barNumber);
   }
 
