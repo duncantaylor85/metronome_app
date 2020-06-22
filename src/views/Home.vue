@@ -25,7 +25,7 @@
     </v-app-bar>
     <v-content>
       <v-container fluid>
-        <MusicRendering :subButtonStatus="menuData.subButtonStatus" :key="rerender" ref="musicRendering" />
+        <MusicRendering :subButtonStatus="menuData.subButtonStatus" :key="rerender" ref="musicRendering" @setBarNumber="barNumber = $event" />
         <AddBarsDialog :toggleAddBarsModal="addBarsData.dialog" @close-dialog="closeAddDialog" />
         <EditBarDialog :toggleEditBarModal="editBarData.dialog" :barNumber="editBarData.barNumber" :barTimeSig="editBarData.barTimeSig" @close-dialog="closeEditDialog" />
       </v-container>
@@ -68,6 +68,8 @@ export default {
       countInLength: 2,
       barHighlighter: null,
       countInInterface: null,
+      positionInterface: null,
+      barNumber: null,
     };
   },
   watch: {
@@ -76,6 +78,9 @@ export default {
     },
     countInLength(newVal) {
       this.countInInterface.changeCountInLength(newVal);
+    },
+    barNumber(newVal) {
+      this.positionInterface.changeUserPosition(newVal);
     },
   },
   methods: {
@@ -128,6 +133,7 @@ export default {
     const playbackCoordinator = new PlaybackCoordinator(clickProvider, timeRepresentationProvider, barHighlighter);
     this.playbackCoordinator = playbackCoordinator;
     this.countInInterface = this.playbackCoordinator.getCountInInterface();
+    this.positionInterface = this.playbackCoordinator.getPositionInterface();
     selectDefaultTab(this);
   },
   computed: {

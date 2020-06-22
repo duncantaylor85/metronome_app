@@ -47,14 +47,14 @@ class CountInController {
 class PositionController {
   /**
    * Creates a new position controller that uses barHighlighterInterface to send highlight messages to the music rendering
-   * @param {{ highlightCountIn: (barNumber: Number) => void, highlightNormal: (barNumber: Number) => void}} barHighligherInterface
+   * @param {{ highlightCountIn: (barNumber: Number) => void, highlightNormal: (barNumber: Number) => void}} barHighlighterInterface
    * an interface allowing highlighting of a given bar
    * @param {CountInController} countInController the count-in controller for this playback unit
    */
-  constructor(barHighligherInterface, countInController) {
+  constructor(barHighlighterInterface, countInController) {
     this.currentUserSelectedBar = 1;
     this.currentBar = 1;
-    this.musicRenderer = barHighligherInterface;
+    this.musicRenderer = barHighlighterInterface;
     this.countInController = countInController;
   }
 
@@ -153,8 +153,8 @@ class PlaybackCoordinator {
    */
   getCountInInterface() {
     return {
-      toggleCountIn: this.countInController.toggleCountIn,
-      changeCountInLength: this.countInController.changeCountInLength,
+      toggleCountIn: (val) => this.countInController.toggleCountIn(val),
+      changeCountInLength: (newLength) => this.countInController.changeCountInLength(newLength),
     };
   }
 
@@ -163,7 +163,7 @@ class PlaybackCoordinator {
    */
   getPositionInterface() {
     return {
-      changeUserPosition: this.positionController.changeUserPosition,
+      changeUserPosition: (barNum) => this.positionController.changeUserPosition(barNum) // needed lambda or "this" produces errors
     };
   }
 
