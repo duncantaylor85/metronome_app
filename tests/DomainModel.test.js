@@ -2,15 +2,20 @@ import { BeatSequenceTimeRepresentation, BeatTimeRepresentation } from "@/librar
 import { BarSequence, TimeSignature, Bar, BasicDuration, BPM, SimpleBeatSequenceCreator } from "../src/libraries/DomainModel"
 
 /**
- * Creates a BSTR from a varargs of beats
- *
+ * Creates a BSTR from a spread of "beats", each given as an array [duration, count-in, first, assoc bar]
  * @param {...[Number, Boolean, Boolean, Number]} beats each an array [duration, count-in, first, assoc bar]
+ * @returns {BeatSequenceTimeRepresentation}
  */
 function bstr(...beats) {
   let btr = beats.map(([d, b1, b2, b]) => new BeatTimeRepresentation(d, b1, b2, b))
   return new BeatSequenceTimeRepresentation(btr)
 }
 
+/**
+ * Creates a BarSequence from a spread of "bars", each given as an array [[timeSigNumerator, timeSigDenomintorAsNumber], [beatsPerMinute, beatDurationAsNumber]]
+ * @param  {...[[Number, Number],[Number, Number]]} bars a spread of bars in format [[timeSigNumerator, timeSigDenomintorAsNumber], [beatsPerMinute, beatDurationAsNumber]]
+ * @returns {BarSequence}
+ */
 function bs(...bars) {
   let bSeq = new BarSequence()
   let barArray = bars.map(([[tN,tDen], [bpmN, bpmDen]]) => new Bar(new TimeSignature(tN, BasicDuration.fromInteger(tDen)), new BPM(bpmN, BasicDuration.fromInteger(bpmDen))))
