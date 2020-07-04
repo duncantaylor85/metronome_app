@@ -26,15 +26,17 @@ import { getters } from "@/store/store.js";
 import { bus } from "../main";
 export default {
   name: "MusicRendering",
+  props: ["userPositionInterface"],
   data() {
     return {
-      lastBarSelectedIndex: -1,
       gradient: [],
+      normalHighlightColour: "rgba(100,115,201,.33), rgba(100,115,201,.33)",
+      countInHighlightColour: "rgba(211, 223, 0,.33), rgba(211, 223, 0,.33)"
     };
   },
   methods: {
     selectBar(barNumber) {
-      this.$emit("setBarNumber", barNumber);
+      this.localPositionInterface.changeUserPosition(barNumber)
     },
     getTimeSigNumeratorOf: function(bar) {
       // replaces $store.getters
@@ -44,47 +46,54 @@ export default {
       // replaces $store.getters
       return getters.getTimeSigOf(bar).getDenominatorAsNumber();
     },
-    insertHighlight(barNumberIndex, stringColour) {
-      this.gradient.splice(barNumberIndex, 1, stringColour);
-    },
-
-    highlight(barNumber, colour) {
-      let barNumberIndex = barNumber - 1;
-      if (barNumberIndex === this.lastBarSelectedIndex) {
-        if (this.gradient[barNumberIndex] === colour) {
-          this.insertHighlight(barNumberIndex, "");
-        } else {
-          this.insertHighlight(barNumberIndex, colour);
-        }
-      } else {
-        this.insertHighlight(barNumberIndex, colour);
-        if (this.lastBarSelectedIndex !== -1) {
-          this.insertHighlight(this.lastBarSelectedIndex, "");
-        }
-      }
-      this.lastBarSelectedIndex = barNumberIndex;
+    insertHighlight(barNumber, stringColour) {
+      this.gradient.splice(barNumber - 1, 1, stringColour);
     },
     highlightNormal(barNumber) {
-      this.highlight(barNumber, "rgba(100,115,201,.33), rgba(100,115,201,.33)");
+      this.insertHighlight(barNumber, this.normalHighlightColour);
     },
     highlightCountIn(barNumber) {
-      this.highlight(barNumber, "rgba(211, 223, 0,.33), rgba(211, 223, 0,.33)");
+      this.insertHighlight(barNumber, this.countInHighlightColour);
     },
     getBarHighlighter() {
-      return { highlightNormal: (barNum) => this.highlightNormal(barNum), highlightCountIn: (barNum) => this.highlightCountIn(barNum) };
+      return { 
+        highlightNormal: (barNum) => this.highlightNormal(barNum), 
+        highlightCountIn: (barNum) => this.highlightCountIn(barNum), 
+        cancelHighlight: (barNum) => this.cancelHighlight(barNum),
+        clearAllHighlights: () => this.clearAllHighlights() 
+      };
     },
+    clearAllHighlights() {
+      clearGradientArray()
+    },
+    cancelHighlight(barNumber) {
+      this.insertHighlight(barNumber, "")
+    },
+    clearGradientArray() {
+      let tempArray = new Array(this.barCount);
+      let gradient = tempArray.fill("");
+      this.gradient = gradient;
+    }
   },
   computed: {
     barCount: function() {
       return getters.getBarCount();
     },
   },
+  mounted() {
+    this.localPositionInterface = this.userPositionInterface
+    console.log("mounted MR")
+    console.log(this.localPositionInterface)
+  },
   created() {
-    bus.$on("change-gradient-array", () => {
-      let tempArray = new Array(this.barCount);
-      let gradient = tempArray.fill("");
-      this.gradient = gradient;
-    });
+    bus.$on("change-gradient-array", () => this.clearGradientArray() );
+    console.log(`${this.userPositionInterface}`)
+  },
+  beforeUpdate() {
+    console.log("updated")
+  },
+  updated() {
+    console.log("updated")
   },
   props: ["subButtonStatus"],
 };

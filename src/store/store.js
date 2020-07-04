@@ -1,5 +1,6 @@
 import Vue from "vue";
 import { BarSequence, SimpleBeatSequenceCreator } from "@/libraries/DomainModel.js";
+import { PlaybackCoordinator } from "../libraries/PlaybackModel";
 
 
 /*
@@ -25,6 +26,7 @@ import { BarSequence, SimpleBeatSequenceCreator } from "@/libraries/DomainModel.
 
 const store = Vue.observable({
   barSequence: new BarSequence(),
+  playback: new PlaybackCoordinator()
 });
 
 export const mutators = {
@@ -56,3 +58,7 @@ export const getters = {
   }
 
 };
+
+export const playbackModel = {
+  setup
+}
