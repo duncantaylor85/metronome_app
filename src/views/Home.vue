@@ -2,8 +2,8 @@
   <div class="home">
     <v-app-bar flat height="150">
       <div class="d-flex">
-        <audio ref="highBeep" src="@/assets/highBeep.mp3"></audio>
-        <audio ref="lowBeep" src="@/assets/lowBeep.mp3"></audio>
+        <audio id="highBeep" src="@/assets/highBeep.mp3"></audio>
+        <audio id="lowBeep" src="@/assets/lowBeep.mp3"></audio>
         <v-card class="d-flex pr-2 pt-1" height="100">
           <div class="mx-2 mt-2 mr-4">
             <v-select v-model="countInLength" :items="countInLengths" type="number" label="How many bars count in?"></v-select>
@@ -11,9 +11,9 @@
           </div>
 
           <div class="pt-1">
-            <v-btn @click="playbackCoordinator.startPlaying()"><v-icon large>mdi-play</v-icon></v-btn>
-            <v-btn @click="playbackCoordinator.pausePlaying()"><v-icon large>mdi-pause</v-icon></v-btn>
-            <v-btn @click="playbackCoordinator.rewind()"><v-icon large>mdi-rewind</v-icon></v-btn>
+            <v-btn @click="playbackInterface.startPlaying()"><v-icon large>mdi-play</v-icon></v-btn>
+            <v-btn @click="playbackInterface.pausePlaying()"><v-icon large>mdi-pause</v-icon></v-btn>
+            <v-btn @click="playbackInterface.rewind()"><v-icon large>mdi-rewind</v-icon></v-btn>
           </div>
         </v-card>
         <v-card class="ml-6">
@@ -62,7 +62,6 @@ export default {
         barTimeSig: {},
       },
       rerender: true,
-      playbackCoordinator: null,
       countInToggle: false,
       countInLengths: [1, 2, 4, 8],
       countInLength: 2,
@@ -108,15 +107,18 @@ export default {
   },
   beforeCreate() {},
   created() {
-    
+    console.log("HOME CREATED")
     setupMenuButtons(this);
-    const highBeep = this.$refs.highBeep;
-    const lowBeep = this.$refs.lowBeep;
+    
     const clickProvider = {
       playHigh() {
+        console.log("high beep")
+        const highBeep = document.getElementById("highBeep")
         highBeep.play();
       },
       playLow() {
+        console.log("low beep")
+        const lowBeep = document.getElementById("lowBeep")
         lowBeep.play();
       },
     };
@@ -124,9 +126,11 @@ export default {
   },
   beforeMount() {},
   mounted() {
+    console.log("HOME MOUNTED")
     this.countInInterface = playbackModel.getCountInInterface();
     this.playbackInterface = playbackModel.getPlaybackInterface();
-    
+    console.log(highBeep)
+    console.log(lowBeep)
     selectDefaultTab(this);
   },
   computed: {

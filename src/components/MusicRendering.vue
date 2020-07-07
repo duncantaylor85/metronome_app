@@ -81,11 +81,11 @@ export default {
     },
   },
   mounted() {
-    
+    console.log("MR MOUNTED")
     this.userPositionInterface = playbackModel.getUserPositionInterface()
   },
   created() {
-    
+    console.log("MR CREATED")
     bus.$on("change-gradient-array", () => this.clearGradientArray() );
     playbackModelSetup.setBarHighlighter(this.getBarHighlighter())
     playbackModelSetup.setup()

@@ -61,14 +61,21 @@ export const getters = {
 
 export const playbackModelSetup = {
   setBarHighlighter(barHighlighter) {
-    store.playback.setBarHighlighter(barHighlighter)
+    if (store.playback instanceof PlaybackCoordinator) {
+      store.playback.replaceBarHighlighter(barHighlighter)
+    } 
+    else {
+      store.playback.setBarHighlighter(barHighlighter)
+    }
   },
 
   setClickProvider(clickProvider) {
+    if (store.playback instanceof PlaybackCoordinator) return
     store.playback.setClickProvider(clickProvider)
   },
 
   setup() {
+    if (store.playback instanceof PlaybackCoordinator) return
     const timeRepresentationProvider = {
       getTimeRepresentation: getters.getTimeRepresentation,
     };

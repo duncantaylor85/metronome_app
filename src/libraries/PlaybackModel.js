@@ -75,7 +75,7 @@ class PositionController {
    */
   createPlayableTimeRepresentation(bSTR) {
     const trimmedBarSeq = bSTR.trim(this.currentUserSelectedBar)
-    const fullSequence = this.countInController.createCountIn(trimmedBarSeq)
+    const fullSequence = this.countInController.addCountIn(trimmedBarSeq)
     return fullSequence
   }
 
@@ -156,6 +156,17 @@ class PositionController {
       this.resetAllPositions()
     } else {
       this.restoreUserPosition()
+    }
+  }
+
+  /**
+   * Replaces the bar highlighter interface with a new one for a newly-created MusicRenderer component
+   * @param {{ highlightCountIn: (barNumber: Number) => void, highlightNormal: (barNumber: Number) => void}} barHighlighter 
+   */
+  replaceBarHighlighter(barHighlighter) {
+    this.musicRenderer = barHighlighter
+    if (this.currentBar !== -1) {
+      this.musicRenderer.highlightNormal(this.currentBar)
     }
   }
 }
@@ -254,6 +265,14 @@ class PlaybackCoordinator {
   pausePlaying() {
     this.recursivePlay.pauseSequence()
   }
+
+  /**
+   * Replaces the PositionController's bar highlighter interface with a new one for a newly-created MusicRenderer component
+   * @param {{ highlightCountIn: (barNumber: Number) => void, highlightNormal: (barNumber: Number) => void}} barHighlighter 
+   */
+  replaceBarHighlighter(barHighlighter) {
+    this.positionController.replaceBarHighlighter(barHighlighter)
+  }
 }
 
 /**
@@ -288,8 +307,8 @@ class RecursivePlay {
    */
   play() {
     let beat = this.bSTR.getBeat(this.currentIndex)
-    this.playBeat(this.currentIndex)
-    this.highlight(this.currentIndex)
+    this.playBeat(beat)
+    this.highlight(beat)
     if (!this.bSTR.isFinalBeat(this.currentIndex)) {
       this.cancelObject = window.setTimeout(() => {
         this.currentIndex++
@@ -303,6 +322,7 @@ class RecursivePlay {
    * @param {BeatTimeRepresentation} beat the current beat to play
    */
   playBeat(beat) {
+    console.log(beat)
     if (beat.isFirstBeatOfBar) {
       this.clickProvider.playHigh()
     } else {
