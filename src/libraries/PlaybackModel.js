@@ -1,7 +1,7 @@
 import { getters } from "@/store/store.js"
 import { BeatSequenceTimeRepresentation, BeatTimeRepresentation } from "@/libraries/DomainModel.js"
 
-export { PositionController, CountInController, PlaybackCoordinator }
+export { PositionController, CountInController, PlaybackCoordinator, PlaybackBuilder }
 
 
 function setup() {
@@ -164,6 +164,30 @@ class PositionController {
   }
 }
 
+class PlaybackBuilder {
+  /**
+   * @param {{ getTimeRepresentation: () => BeatSequenceTimeRepresentation }} timeRepProvider interface to a provider of the current bar sequence's
+   */
+  constructor() {}
+
+  setTimeRepProvider(timeRepProvider) {
+    this.timeRepProvider = timeRepProvider
+  }
+
+  setBarHighlighter(barHighlighter) {
+    this.barHighlighter = barHighlighter
+  }
+
+  setClickProvider(clickProvider) {
+    this.clickProvider = clickProvider
+  }
+
+  setup() {
+    if (!this.timeRepProvider || !this.barHighlighter || !this.clickProvider) throw "Tried to create a playback builder where at least one set parameter was missing"
+    return new PlaybackCoordinator(this.clickProvider, this.timeRepProvider, this.barHighlighter)
+  }
+}
+
 /**
  * Provides the interface for playback, pause, rewind; also generates interfaces for the count-in controller and user position controller
  */
@@ -183,26 +207,6 @@ class PlaybackCoordinator {
   }
 
   /**
-   * @param {{ getTimeRepresentation: () => BeatSequenceTimeRepresentation }} timeRepProvider interface to a provider of the current bar sequence's
-   */
-  constructor(timeRepProvider) {
-    this.timeRepProvider = timeRepProvider
-    this.countInController = new CountInController()
-  }
-
-  setBarHighlighter(barHighlighter) {
-    this.barHighlighter = barHighlighter
-  }
-
-  setClickProvider(clickProvider) {
-    this.clickProvider = clickProvider
-  }
-
-  setup() {
-
-  }
-
-  /**
    * @returns {{ toggleCountIn: (value: Boolean) => void, changeCountInLength: (barCount: Number) => void}} the UI's interface to the count-in controller
    */
   getCountInInterface() {
@@ -218,6 +222,17 @@ class PlaybackCoordinator {
   getPositionInterface() {
     return {
       changeUserPosition: barNum => this.positionController.changeUserPosition(barNum), // needed lambda or "this" produces errors
+    }
+  }
+
+  /**
+   * @returns {{ rewind: () => void, startPlaying: () => void, pausePlaying: () => void}}
+   */
+  getPlaybackInterface() {
+    return {
+      rewind: () => this.rewind(),
+      startPlaying: () => this.startPlaying(),
+      pausePlaying: () => this.pausePlaying()
     }
   }
 

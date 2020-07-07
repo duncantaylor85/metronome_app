@@ -22,7 +22,7 @@
   </div>
 </template>
 <script>
-import { getters } from "@/store/store.js";
+import { getters, playbackModelSetup } from "@/store/store.js";
 import { bus } from "../main";
 export default {
   name: "MusicRendering",
@@ -81,9 +81,8 @@ export default {
     },
   },
   mounted() {
-    this.localPositionInterface = this.userPositionInterface
     console.log("mounted MR")
-    console.log(this.localPositionInterface)
+    playbackModelSetup.setBarHighlighter(this.getBarHighlighter())
   },
   created() {
     bus.$on("change-gradient-array", () => this.clearGradientArray() );

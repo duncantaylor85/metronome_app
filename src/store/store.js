@@ -1,6 +1,6 @@
 import Vue from "vue";
 import { BarSequence, SimpleBeatSequenceCreator } from "@/libraries/DomainModel.js";
-import { PlaybackCoordinator } from "../libraries/PlaybackModel";
+import { PlaybackCoordinator, PlaybackBuilder } from "../libraries/PlaybackModel";
 
 
 /*
@@ -26,7 +26,7 @@ import { PlaybackCoordinator } from "../libraries/PlaybackModel";
 
 const store = Vue.observable({
   barSequence: new BarSequence(),
-  playback: new PlaybackCoordinator()
+  playback: new PlaybackBuilder()
 });
 
 export const mutators = {
@@ -59,6 +59,35 @@ export const getters = {
 
 };
 
+export const playbackModelSetup = {
+  setBarHighlighter(barHighlighter) {
+    store.playback.setBarHighlighter(barHighlighter)
+  },
+
+  setClickProvider(clickProvider) {
+    store.playback.setClickProvider(clickProvider)
+  },
+
+  setup() {
+    const timeRepresentationProvider = {
+      getTimeRepresentation: getters.getTimeRepresentation,
+    };
+    store.playback.setTimeRepProvider(timeRepresentationProvider)
+    store.playback = store.playback.setup()
+  }
+}
+
 export const playbackModel = {
-  setup
+  getCountInInterface() {
+    if (store.playback instanceof PlaybackBuilder) throw `Tried to getCountInInterface without running setup on the PlaybackBuilder`
+    return store.playback.getCountInInterface()
+  },
+  getPlaybackInterface() { 
+    if (store.playback instanceof PlaybackBuilder) throw `Tried to getPlaybackInterface without running setup on the PlaybackBuilder`
+    return store.playback.getPlaybackInterface()
+  },
+  getUserPositionInterface() {
+    if (store.playback instanceof PlaybackBuilder) throw `Tried to getUserPositionInterface without running setup on the PlaybackBuilder`
+    return store.playback.getPositionInterface()
+  }
 }

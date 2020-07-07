@@ -40,7 +40,7 @@ import EditBarDialog from "@/components/EditBarDialog.vue";
 import { bus } from "../main";
 import { TimeSignature, BPM, BarSequence, BasicDuration } from "@/libraries/DomainModel.js";
 
-import { mutators, getters } from "@/store/store.js";
+import { mutators, getters, playbackModelSetup } from "@/store/store.js";
 import { CountInController, UserPositionController, PlaybackCoordinator } from "@/libraries/PlaybackModel.js";
 import { setupMenuButtons, selectDefaultTab } from "@/libraries/MenuSetup.js";
 
@@ -69,6 +69,7 @@ export default {
       barHighlighter: null,
       countInInterface: null,
       positionInterface: null,
+      playbackInterface: null,
       barNumber: null,
     };
   },
@@ -112,10 +113,7 @@ export default {
   },
   beforeMount() {},
   mounted() {
-    const barHighlighter = this.$refs.musicRendering.getBarHighlighter();
-    const timeRepresentationProvider = {
-      getTimeRepresentation: getters.getTimeRepresentation,
-    };
+    
     const highBeep = this.$refs.highBeep;
     const lowBeep = this.$refs.lowBeep;
     const clickProvider = {
@@ -126,16 +124,15 @@ export default {
         lowBeep.play();
       },
     };
+    playbackModelSetup.setClickProvider(clickProvider)
+    playbackModelSetup.setup()
 
-    const playbackCoordinator = new PlaybackCoordinator(clickProvider, timeRepresentationProvider, barHighlighter);
-    this.playbackCoordinator = playbackCoordinator;
-    this.countInInterface = this.playbackCoordinator.getCountInInterface();
-    this.$nextTick(function () {
-      this.positionInterface = this.playbackCoordinator.getPositionInterface();
-    })
-    
-    console.log(this.positionInterface)
+    this.countInInterface = playbackModel.getCountInInterface();
+    this.playbackInterface = playbackModel.getPlaybackInterface();
+
+
     console.log("mounted Home")
+
     selectDefaultTab(this);
   },
   computed: {
