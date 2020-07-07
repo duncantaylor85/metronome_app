@@ -130,14 +130,11 @@ class PositionController {
     // TODO
     //console.log("PlaybackModel.js::PositionController.changeUserPosition() needs playback paused, so the interface needs to pause itself")
     // this.playbackCoordinator.pausePlaying()
-    console.log(`Start: last position ${this.lastUserSelectedBar}, current position ${this.currentUserSelectedBar}`)
-    if (this.lastUserSelectedBar === barNumber) {
-      console.log(`Same`)
-      this.musicRenderer.cancelHighlight(this.lastUserSelectedBar)
+    if (this.currentUserSelectedBar === barNumber) {
+      this.musicRenderer.cancelHighlight(this.currentUserSelectedBar)
       this.currentUserSelectedBar = -1
       this.lastUserSelectedBar = -1
     } else {
-      console.log(`Different`)
       // different selected now from then
       this.lastUserSelectedBar = this.currentUserSelectedBar
       this.currentUserSelectedBar = barNumber
@@ -148,7 +145,6 @@ class PositionController {
       }
       this.musicRenderer.highlightNormal(this.currentUserSelectedBar)
     }
-    console.log(`End: last position ${this.lastUserSelectedBar}, current position ${this.currentUserSelectedBar}`)
   }
 
 

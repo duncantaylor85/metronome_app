@@ -25,7 +25,7 @@
     </v-app-bar>
     <v-content>
       <v-container fluid>
-        <MusicRendering :subButtonStatus="menuData.subButtonStatus" :key="rerender" ref="musicRendering" :userPositionInterface="positionInterface" />
+        <MusicRendering :subButtonStatus="menuData.subButtonStatus" :key="rerender" ref="musicRendering" />
         <AddBarsDialog :toggleAddBarsModal="addBarsData.dialog" @close-dialog="closeAddDialog" />
         <EditBarDialog :toggleEditBarModal="editBarData.dialog" :barNumber="editBarData.barNumber" :barTimeSig="editBarData.barTimeSig" @close-dialog="closeEditDialog" />
       </v-container>
@@ -40,7 +40,7 @@ import EditBarDialog from "@/components/EditBarDialog.vue";
 import { bus } from "../main";
 import { TimeSignature, BPM, BarSequence, BasicDuration } from "@/libraries/DomainModel.js";
 
-import { mutators, getters, playbackModelSetup } from "@/store/store.js";
+import { mutators, getters, playbackModelSetup, playbackModel } from "@/store/store.js";
 import { CountInController, UserPositionController, PlaybackCoordinator } from "@/libraries/PlaybackModel.js";
 import { setupMenuButtons, selectDefaultTab } from "@/libraries/MenuSetup.js";
 
@@ -68,7 +68,6 @@ export default {
       countInLength: 2,
       barHighlighter: null,
       countInInterface: null,
-      positionInterface: null,
       playbackInterface: null,
       barNumber: null,
     };
@@ -109,11 +108,8 @@ export default {
   },
   beforeCreate() {},
   created() {
-    setupMenuButtons(this);
-  },
-  beforeMount() {},
-  mounted() {
     
+    setupMenuButtons(this);
     const highBeep = this.$refs.highBeep;
     const lowBeep = this.$refs.lowBeep;
     const clickProvider = {
@@ -125,14 +121,12 @@ export default {
       },
     };
     playbackModelSetup.setClickProvider(clickProvider)
-    playbackModelSetup.setup()
-
+  },
+  beforeMount() {},
+  mounted() {
     this.countInInterface = playbackModel.getCountInInterface();
     this.playbackInterface = playbackModel.getPlaybackInterface();
-
-
-    console.log("mounted Home")
-
+    
     selectDefaultTab(this);
   },
   computed: {

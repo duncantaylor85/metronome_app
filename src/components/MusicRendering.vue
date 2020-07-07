@@ -22,21 +22,21 @@
   </div>
 </template>
 <script>
-import { getters, playbackModelSetup } from "@/store/store.js";
+import { getters, playbackModelSetup, playbackModel } from "@/store/store.js";
 import { bus } from "../main";
 export default {
   name: "MusicRendering",
-  props: ["userPositionInterface"],
   data() {
     return {
       gradient: [],
       normalHighlightColour: "rgba(100,115,201,.33), rgba(100,115,201,.33)",
-      countInHighlightColour: "rgba(211, 223, 0,.33), rgba(211, 223, 0,.33)"
+      countInHighlightColour: "rgba(211, 223, 0,.33), rgba(211, 223, 0,.33)",
+      userPositionInterface: null
     };
   },
   methods: {
     selectBar(barNumber) {
-      this.localPositionInterface.changeUserPosition(barNumber)
+      this.userPositionInterface.changeUserPosition(barNumber)
     },
     getTimeSigNumeratorOf: function(bar) {
       // replaces $store.getters
@@ -81,18 +81,20 @@ export default {
     },
   },
   mounted() {
-    console.log("mounted MR")
-    playbackModelSetup.setBarHighlighter(this.getBarHighlighter())
+    
+    this.userPositionInterface = playbackModel.getUserPositionInterface()
   },
   created() {
+    
     bus.$on("change-gradient-array", () => this.clearGradientArray() );
-    console.log(`${this.userPositionInterface}`)
+    playbackModelSetup.setBarHighlighter(this.getBarHighlighter())
+    playbackModelSetup.setup()
   },
   beforeUpdate() {
-    console.log("updated")
+    
   },
   updated() {
-    console.log("updated")
+    
   },
   props: ["subButtonStatus"],
 };
