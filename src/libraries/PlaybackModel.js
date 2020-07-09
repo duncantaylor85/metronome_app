@@ -29,7 +29,13 @@ class CountInController {
    * @returns {BeatSequenceTimeRepresentation} the input beat sequence with the count-in of appropriate length prepended
    */
   addCountIn(trimmedBeatSeq) {
-    const fullSequence = trimmedBeatSeq.addCountIn(this.countInLength)
+    let fullSequence
+    if (this.enabled) {
+      fullSequence = trimmedBeatSeq.addCountIn(this.countInLength)
+    }
+    else {
+      fullSequence = trimmedBeatSeq
+    }
     return fullSequence
   }
 
