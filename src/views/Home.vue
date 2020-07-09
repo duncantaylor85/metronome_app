@@ -25,7 +25,7 @@
     </v-app-bar>
     <v-content>
       <v-container fluid>
-        <MusicRendering :subButtonStatus="menuData.subButtonStatus" :key="rerender" ref="musicRendering" />
+        <MusicRendering :subButtonStatus="menuData.subButtonStatus" ref="musicRendering" />
         <AddBarsDialog :toggleAddBarsModal="addBarsData.dialog" @close-dialog="closeAddDialog" />
         <EditBarDialog :toggleEditBarModal="editBarData.dialog" :barNumber="editBarData.barNumber" :barTimeSig="editBarData.barTimeSig" @close-dialog="closeEditDialog" />
       </v-container>
@@ -61,7 +61,7 @@ export default {
         barNumber: null,
         barTimeSig: {},
       },
-      rerender: true,
+
       countInToggle: false,
       countInLengths: [1, 2, 4, 8],
       countInLength: 2,
@@ -98,7 +98,6 @@ export default {
     },
     closeEditDialog() {
       this.editBarData.dialog = false;
-      this.rerender = !this.rerender;
     },
 
     selectMode(mode) {
@@ -107,30 +106,30 @@ export default {
   },
   beforeCreate() {},
   created() {
-    console.log("HOME CREATED")
+    console.log("HOME CREATED");
     setupMenuButtons(this);
-    
+
     const clickProvider = {
       playHigh() {
-        console.log("high beep")
-        const highBeep = document.getElementById("highBeep")
+        console.log("high beep");
+        const highBeep = document.getElementById("highBeep");
         highBeep.play();
       },
       playLow() {
-        console.log("low beep")
-        const lowBeep = document.getElementById("lowBeep")
+        console.log("low beep");
+        const lowBeep = document.getElementById("lowBeep");
         lowBeep.play();
       },
     };
-    playbackModelSetup.setClickProvider(clickProvider)
+    playbackModelSetup.setClickProvider(clickProvider);
   },
   beforeMount() {},
   mounted() {
-    console.log("HOME MOUNTED")
+    console.log("HOME MOUNTED");
     this.countInInterface = playbackModel.getCountInInterface();
     this.playbackInterface = playbackModel.getPlaybackInterface();
-    console.log(highBeep)
-    console.log(lowBeep)
+    console.log(highBeep);
+    console.log(lowBeep);
     selectDefaultTab(this);
   },
   computed: {

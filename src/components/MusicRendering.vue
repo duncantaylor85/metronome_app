@@ -31,12 +31,12 @@ export default {
       gradient: [],
       normalHighlightColour: "rgba(100,115,201,.33), rgba(100,115,201,.33)",
       countInHighlightColour: "rgba(211, 223, 0,.33), rgba(211, 223, 0,.33)",
-      userPositionInterface: null
+      userPositionInterface: null,
     };
   },
   methods: {
     selectBar(barNumber) {
-      this.userPositionInterface.changeUserPosition(barNumber)
+      this.userPositionInterface.changeUserPosition(barNumber);
     },
     getTimeSigNumeratorOf: function(bar) {
       // replaces $store.getters
@@ -56,24 +56,24 @@ export default {
       this.insertHighlight(barNumber, this.countInHighlightColour);
     },
     getBarHighlighter() {
-      return { 
-        highlightNormal: (barNum) => this.highlightNormal(barNum), 
-        highlightCountIn: (barNum) => this.highlightCountIn(barNum), 
+      return {
+        highlightNormal: (barNum) => this.highlightNormal(barNum),
+        highlightCountIn: (barNum) => this.highlightCountIn(barNum),
         cancelHighlight: (barNum) => this.cancelHighlight(barNum),
-        clearAllHighlights: () => this.clearAllHighlights() 
+        clearAllHighlights: () => this.clearAllHighlights(),
       };
     },
     clearAllHighlights() {
-      clearGradientArray()
+      clearGradientArray();
     },
     cancelHighlight(barNumber) {
-      this.insertHighlight(barNumber, "")
+      this.insertHighlight(barNumber, "");
     },
     clearGradientArray() {
       let tempArray = new Array(this.barCount);
       let gradient = tempArray.fill("");
       this.gradient = gradient;
-    }
+    },
   },
   computed: {
     barCount: function() {
@@ -81,21 +81,17 @@ export default {
     },
   },
   mounted() {
-    console.log("MR MOUNTED")
-    this.userPositionInterface = playbackModel.getUserPositionInterface()
+    console.log("MR MOUNTED");
+    this.userPositionInterface = playbackModel.getUserPositionInterface();
   },
   created() {
-    console.log("MR CREATED")
-    bus.$on("change-gradient-array", () => this.clearGradientArray() );
-    playbackModelSetup.setBarHighlighter(this.getBarHighlighter())
-    playbackModelSetup.setup()
+    console.log("MR CREATED");
+    bus.$on("change-gradient-array", () => this.clearGradientArray());
+    playbackModelSetup.setBarHighlighter(this.getBarHighlighter());
+    playbackModelSetup.setup();
   },
-  beforeUpdate() {
-    
-  },
-  updated() {
-    
-  },
+  beforeUpdate() {},
+  updated() {},
   props: ["subButtonStatus"],
 };
 </script>

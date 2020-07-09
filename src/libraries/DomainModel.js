@@ -1,40 +1,40 @@
-import { BeatSequenceTimeRepresentation, BeatTimeRepresentation } from "@/libraries/BeatSequence.js"
+import { BeatSequenceTimeRepresentation, BeatTimeRepresentation } from "@/libraries/BeatSequence.js";
 
-export { TimeSignature, BPM, BarSequence, Bar, BasicDuration, SimpleBeatSequenceCreator }
+export { TimeSignature, BPM, BarSequence, Bar, BasicDuration, SimpleBeatSequenceCreator };
 
 /**
  * Class representing a time signature of given numerator and denominator
  */
 class TimeSignature {
   /**
-   * 
+   *
    * @param {Number} numerator should be a positive integer
    * @param {BasicDuration} denominator should be one of _1st, _2nd, _4th, _8th, _16th, _32nd
    */
   constructor(numerator, denominator) {
-    this.numerator = numerator
-    this.denominator = denominator
+    this.numerator = numerator;
+    this.denominator = denominator;
   }
 
   /**
    * @returns {Number} positive integer representing the numerator
    */
   getNumerator() {
-    return this.numerator
+    return this.numerator;
   }
 
   /**
    * @returns {Number} integer in {1,2,4,8,16,32} representing the denominator as displayed
    */
   getDenominatorAsNumber() {
-    return BasicDuration.toInteger(this.denominator)
+    return BasicDuration.toInteger(this.denominator);
   }
 
   /**
    * @returns {TimeSignature} deep copy of this time signature object
    */
   copy() {
-    return new TimeSignature(this.numerator, this.denominator)
+    return new TimeSignature(this.numerator, this.denominator);
   }
 }
 
@@ -48,28 +48,28 @@ class BPM {
    * @param {BasicDuration} denominator the duration of each beat
    */
   constructor(perMinute, denominator) {
-    this.perMinute = perMinute
-    this.denominator = denominator
+    this.perMinute = perMinute;
+    this.denominator = denominator;
   }
 
   /**
    * @returns {Number} number of beats of the given duration per minute
    */
   getPerMinute() {
-    return this.perMinute
+    return this.perMinute;
   }
   /**
    * @returns {BasicDuration} duration marking of this metronome mark
    */
   getDenominatorAsNumber() {
-    return BasicDuration.toInteger(this.denominator)
+    return BasicDuration.toInteger(this.denominator);
   }
 
   /**
    * @returns {BPM} returns a deep copy of this metronome marking
    */
   copy() {
-    return new BPM(this.perMinute, this.denominator)
+    return new BPM(this.perMinute, this.denominator);
   }
 }
 
@@ -78,19 +78,19 @@ class BPM {
  */
 class BarSequence {
   constructor() {
-    this.bars = []
+    this.bars = [];
   }
   /**
    * Adds count bars of the given time signature to the end of the bar
    * sequence, or if empty, creates count bars as specified.
-   * @param {TimeSignature} timeSig 
-   * @param {BPM} bpm 
-   * @param {Number} count 
+   * @param {TimeSignature} timeSig
+   * @param {BPM} bpm
+   * @param {Number} count
    * @returns {void}
    */
   addBarsToEnd(timeSig, bpm, count) {
     for (let i = 1; i <= count; i++) {
-      this.bars.push(new Bar(timeSig, bpm))
+      this.bars.push(new Bar(timeSig, bpm));
     }
   }
 
@@ -103,14 +103,15 @@ class BarSequence {
    * @returns {void}
    */
   replaceBar(barNumber, timeSig, bpm) {
-    this.bars[barNumber - 1] = new Bar(timeSig, bpm)
+    const bar = new Bar(timeSig, bpm);
+    this.bars.splice(barNumber - 1, 1, bar);
   }
 
   /**
    * @returns {Number} the number of bars in this bar sequence
    */
   getBarCount() {
-    return this.bars.length
+    return this.bars.length;
   }
 
   /**
@@ -119,7 +120,7 @@ class BarSequence {
    * @returns {TimeSignature} returns a copy of the time signature of the bar at the given bar number
    */
   getTimeSigOf(barNumber) {
-    return this.bars[barNumber - 1].getTimeSig()
+    return this.bars[barNumber - 1].getTimeSig();
   }
 
   /**
@@ -128,7 +129,7 @@ class BarSequence {
    * @returns {BPM} returns a copy of the tempo marking of the bar at the given bar number
    */
   getTempoOf(barNumber) {
-    return this.bars[barNumber - 1].getTempo()
+    return this.bars[barNumber - 1].getTempo();
   }
 
   /**
@@ -139,8 +140,8 @@ class BarSequence {
    */
   deleteBar(barNumber) {
     this.bars = this.bars.filter((bar, index) => {
-      return index != barNumber - 1
-    })
+      return index != barNumber - 1;
+    });
   }
 
   // JSDoc doesn't allow imports to be treated as types, hence the explicit name below of BSTR
@@ -152,7 +153,7 @@ class BarSequence {
    * from running this bar sequence through the given beat sequence creator
    */
   getTimeRepresentation(beatSequenceCreator) {
-    return beatSequenceCreator.createFrom(this)
+    return beatSequenceCreator.createFrom(this);
   }
 }
 /**
@@ -164,21 +165,21 @@ class Bar {
    * @param {BPM} tempo metronome marking of this bar
    */
   constructor(timeSig, tempo) {
-    this.timeSig = timeSig
-    this.tempo = tempo
+    this.timeSig = timeSig;
+    this.tempo = tempo;
   }
 
   /**
-   * @returns {TimeSignature} a copy of the time signature of this bar 
+   * @returns {TimeSignature} a copy of the time signature of this bar
    */
   getTimeSig() {
-    return this.timeSig.copy()
+    return this.timeSig.copy();
   }
   /**
    * @returns {BPM} a copy of the metronome marking of this bar
    */
   getTempo() {
-    return this.tempo.copy()
+    return this.tempo.copy();
   }
 }
 
@@ -203,32 +204,32 @@ const BasicDuration = {
   fromInteger(i) {
     switch (i) {
       case 1:
-        return BasicDuration._1st
+        return BasicDuration._1st;
       case 2:
-        return BasicDuration._2nd
+        return BasicDuration._2nd;
       case 4:
-        return BasicDuration._4th
+        return BasicDuration._4th;
       case 8:
-        return BasicDuration._8th
+        return BasicDuration._8th;
       case 16:
-        return BasicDuration._16th
+        return BasicDuration._16th;
       case 32:
-        return BasicDuration._32nd
+        return BasicDuration._32nd;
       default:
-        throw "Tried to get a basic duration of " + i + " which is not one of 1,2,4,8,16,32"
+        throw "Tried to get a basic duration of " + i + " which is not one of 1,2,4,8,16,32";
     }
   },
 
   /**
-   * Converts a BasicDuration of _1st, _2nd, _4th, _8th, _16th, _32nd to the corresponding integer in {1,2,4,8,16,32} to a 
+   * Converts a BasicDuration of _1st, _2nd, _4th, _8th, _16th, _32nd to the corresponding integer in {1,2,4,8,16,32} to a
    * @param {BasicDuration} bd the BasicDuration to convert to the corresponding integer for display
    * of {1,2,4,8,16,32}
    * @returns {Number} the corresponding integer in {1,2,4,8,16,32}
    */
   toInteger(bd) {
-    return Math.pow(2, bd)
+    return Math.pow(2, bd);
   },
-}
+};
 
 // Slightly different way of having an explicit interface, since JSDoc isn't working at the moment
 /**
@@ -244,7 +245,7 @@ class IBeatSequenceCreator {
    * @returns {BeatSequenceTimeRepresentation} BeatSequenceTimeRepresentation produced by the transformation
    */
   createFrom(barSequence) {
-    throw "Not implemented"
+    throw "Not implemented";
   }
 }
 
@@ -257,8 +258,8 @@ class SimpleBeatSequenceCreator extends IBeatSequenceCreator {
    * @returns {BeatSequenceTimeRepresentation} BeatSequenceTimeRepresentation produced by the transformation
    */
   createFrom(barSequence) {
-    let beats = barSequence.bars.map((bar, i) => this.beatsFromBar(bar, i + 1)).flat()
-    return new BeatSequenceTimeRepresentation(beats)
+    let beats = barSequence.bars.map((bar, i) => this.beatsFromBar(bar, i + 1)).flat();
+    return new BeatSequenceTimeRepresentation(beats);
   }
 
   /**
@@ -268,8 +269,8 @@ class SimpleBeatSequenceCreator extends IBeatSequenceCreator {
    * @returns {Array.<BeatTimeRepresentation>} array of beats produced by conversion
    */
   beatsFromBar(bar, barNumber) {
-    let tempo = bar.getTempo()
-    let timeSig = bar.getTimeSig()
+    let tempo = bar.getTempo();
+    let timeSig = bar.getTimeSig();
 
     /*
     examples (tempo is BPM,denominator)
@@ -301,16 +302,12 @@ class SimpleBeatSequenceCreator extends IBeatSequenceCreator {
 
     then just *1000 for millis duration
     */
-    let tsRatio = tempo.getDenominatorAsNumber() / timeSig.getDenominatorAsNumber()
-    let timeRatio = 60 / tempo.getPerMinute()
-    let millisPerSubdivision = timeRatio * tsRatio * 1000
+    let tsRatio = tempo.getDenominatorAsNumber() / timeSig.getDenominatorAsNumber();
+    let timeRatio = 60 / tempo.getPerMinute();
+    let millisPerSubdivision = timeRatio * tsRatio * 1000;
 
-    let beats = new Array(timeSig.getNumerator())
-      .fill(null)
-      .map((_, i) => 
-        new BeatTimeRepresentation(millisPerSubdivision, false, i === 0, barNumber)
-        )
+    let beats = new Array(timeSig.getNumerator()).fill(null).map((_, i) => new BeatTimeRepresentation(millisPerSubdivision, false, i === 0, barNumber));
 
-    return beats
+    return beats;
   }
 }
