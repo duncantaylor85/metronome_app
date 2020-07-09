@@ -69,12 +69,26 @@ class PositionController {
   }
 
   /**
-   * Trims the front of the BSTR until the currently selected bar is the first element, then prepends the count-in bars
+   * Trims the front of the BSTR until the current bar is the first element, then prepends the count-in bars
+   * Depending on current bar, we get different behaviours
+   *   currentBar = -1: not currently paused, so start from the user-selected bar if there is one (i.e. currentUserSelectedBar !== -1), and the beginning if not
+   *   currentBar !== -1: currently paused, so start the sequence from the bar it's paused at, rewinding to the start of the bar (and including a count-in if requested)
    * @param {BeatSequenceTimeRepresentation} bSTR the raw beat sequence for playback, untrimmed and without a count-in
    * @returns {BeatSequenceTimeRepresentation} the input beat sequence, taken from the current bar number, with the count-in of appropriate length prepended
    */
   createPlayableTimeRepresentation(bSTR) {
-    const trimmedBarSeq = bSTR.trim(this.currentUserSelectedBar)
+    let trimmedBarSeq
+    if (this.currentBar === -1) {
+      if (this.currentUserSelectedBar === -1) {
+        trimmedBarSeq = bSTR.trim(1)
+      }
+      else {
+        trimmedBarSeq = bSTR.trim(this.currentUserSelectedBar)
+      }
+    }
+    else {
+      trimmedBarSeq = bSTR.trim(this.currentBar)
+    }
     const fullSequence = this.countInController.addCountIn(trimmedBarSeq)
     return fullSequence
   }
@@ -150,10 +164,15 @@ class PositionController {
       this.musicRenderer.cancelHighlight(this.currentUserSelectedBar)
       this.currentUserSelectedBar = -1
       this.lastUserSelectedBar = -1
+      this.currentBar = -1
     } else {
       // different selected now from then
       this.lastUserSelectedBar = this.currentUserSelectedBar
       this.currentUserSelectedBar = barNumber
+      if (this.currentBar !== -1) {
+        // If we've paused it (i.e. currentBar has a value), then selecting a different bar should cause the pause-highlight to be cancelled
+        this.musicRenderer.cancelHighlight(this.currentBar)  
+      }
       this.currentBar = barNumber
       //console.log("Change - differentiate current playback / user-selected position")
       if (this.lastUserSelectedBar !== -1) {
