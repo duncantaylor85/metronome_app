@@ -122,6 +122,22 @@ class PositionController {
   }
 
   /**
+   * Called as the final beat finishes. Clears the highlight at the current bar (presumably the final one), 
+   * moves the current position back to the user-selected position (or the first bar if no user-selected 
+   * position exists), and then highlights the bar at the new current position.
+   */
+  finishSequence() {
+    this.musicRenderer.cancelHighlight(this.currentBar)
+    if (this.currentUserSelectedBar !== -1) {
+      this.currentBar = this.currentUserSelectedBar
+      this.musicRenderer.highlightNormal(this.currentBar)
+    }
+    else {
+      this.currrentBar = -1
+    }
+  }
+
+  /**
    * Changes the user's position and current bar to the given bar number, and highlights it normally.
    * NOTE: should only be called when the playback has been paused, or behaviour will be undefined
    * @param {Number} barNumber  bar to change to
@@ -313,6 +329,11 @@ class RecursivePlay {
       this.cancelObject = window.setTimeout(() => {
         this.currentIndex++
         this.play()
+      }, beat.durationInMillis)
+    }
+    else { // is final beat
+      window.setTimeout(() => {
+        this.positionController.finishSequence()
       }, beat.durationInMillis)
     }
   }

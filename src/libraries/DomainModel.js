@@ -271,7 +271,6 @@ class SimpleBeatSequenceCreator extends IBeatSequenceCreator {
   beatsFromBar(bar, barNumber) {
     let tempo = bar.getTempo();
     let timeSig = bar.getTimeSig();
-
     /*
     examples (tempo is BPM,denominator)
     what happens when denominators equal?
