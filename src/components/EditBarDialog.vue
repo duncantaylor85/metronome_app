@@ -64,7 +64,7 @@ export default {
         ),
         newBpm: new BPM(
           120,
-          BasicDuration.fromInteger(this.editBarData.denominatorSelected)
+          BasicDuration._4th
         ),
       });
       this.closeDialog();
