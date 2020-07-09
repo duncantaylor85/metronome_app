@@ -4,14 +4,6 @@ import { BeatSequenceTimeRepresentation, BeatTimeRepresentation } from "@/librar
 export { PositionController, CountInController, PlaybackCoordinator, PlaybackBuilder }
 
 
-function setup() {
-
-
-  return 
-}
-
-
-
 /**
  * Controls whether or not a count-in is occurring, how long it is, and adding the count-in to the beat sequence
  */
@@ -114,7 +106,7 @@ class PositionController {
   restoreUserPosition() {
     this.musicRenderer.cancelHighlight(this.currentBar)
     this.currentBar = this.currentUserSelectedBar
-    this.musicRenderer.highlightNormal(barNumber)
+    this.musicRenderer.highlightNormal(this.currentBar)
   }
 
   /**
@@ -166,6 +158,11 @@ class PositionController {
     // TODO
     //console.log("PlaybackModel.js::PositionController.changeUserPosition() needs playback paused, so the interface needs to pause itself")
     // this.playbackCoordinator.pausePlaying()
+    if (this.currentBar !== -1) { 
+      // If we've paused it (i.e. currentBar has a value), then selecting a different bar should cause the pause-highlight to be cancelled
+      this.musicRenderer.cancelHighlight(this.currentBar) 
+    }
+    
     if (this.currentUserSelectedBar === barNumber) {
       this.musicRenderer.cancelHighlight(this.currentUserSelectedBar)
       this.currentUserSelectedBar = -1
@@ -175,10 +172,6 @@ class PositionController {
       // different selected now from then
       this.lastUserSelectedBar = this.currentUserSelectedBar
       this.currentUserSelectedBar = barNumber
-      if (this.currentBar !== -1) {
-        // If we've paused it (i.e. currentBar has a value), then selecting a different bar should cause the pause-highlight to be cancelled
-        this.musicRenderer.cancelHighlight(this.currentBar)  
-      }
       this.currentBar = barNumber
       //console.log("Change - differentiate current playback / user-selected position")
       if (this.lastUserSelectedBar !== -1) {
@@ -193,9 +186,11 @@ class PositionController {
    * Resets current position to user position, or if the same, reset to the beginning.
    */
   rewind() {
-    if (this.currentBar === this.currentUserSelectedBar) {
+    if (this.currentBar === this.currentUserSelectedBar || this.currentUserSelectedBar === -1) {
+      // Either the current bar is the user-selected bar or there isn't a user-selected bar, so go back to the start
       this.resetAllPositions()
     } else {
+      // There is a user-selected bar, and the current bar is not that user-selected bar (i.e. we're paused on a different bar)
       this.restoreUserPosition()
     }
   }
@@ -368,7 +363,6 @@ class RecursivePlay {
    * @param {BeatTimeRepresentation} beat the current beat to play
    */
   playBeat(beat) {
-    console.log(beat)
     if (beat.isFirstBeatOfBar) {
       this.clickProvider.playHigh()
     } else {
