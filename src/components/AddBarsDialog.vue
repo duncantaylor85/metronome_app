@@ -43,7 +43,7 @@ export default {
     addBars() {
       mutators.addBars({
         timeSig: new TimeSignature(this.addBarsData.numerator, BasicDuration.fromInteger(this.addBarsData.denominatorSelected)),
-        bpm: new BPM(120, BasicDuration.fromInteger(this.addBarsData.denominatorSelected)),
+        bpm: new BPM(120, BasicDuration._4th),
         amountOfBars: this.addBarsData.amountOfBars,
       });
 

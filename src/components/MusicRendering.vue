@@ -64,7 +64,7 @@ export default {
       };
     },
     clearAllHighlights() {
-      clearGradientArray();
+      this.clearGradientArray();
     },
     cancelHighlight(barNumber) {
       this.insertHighlight(barNumber, "");

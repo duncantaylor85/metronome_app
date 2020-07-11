@@ -4,14 +4,6 @@ import { BeatSequenceTimeRepresentation, BeatTimeRepresentation } from "@/librar
 export { PositionController, CountInController, PlaybackCoordinator, PlaybackBuilder }
 
 
-function setup() {
-
-
-  return 
-}
-
-
-
 /**
  * Controls whether or not a count-in is occurring, how long it is, and adding the count-in to the beat sequence
  */
@@ -29,7 +21,13 @@ class CountInController {
    * @returns {BeatSequenceTimeRepresentation} the input beat sequence with the count-in of appropriate length prepended
    */
   addCountIn(trimmedBeatSeq) {
-    const fullSequence = trimmedBeatSeq.addCountIn(this.countInLength)
+    let fullSequence
+    if (this.enabled) {
+      fullSequence = trimmedBeatSeq.addCountIn(this.countInLength)
+    }
+    else {
+      fullSequence = trimmedBeatSeq
+    }
     return fullSequence
   }
 
@@ -50,6 +48,14 @@ class CountInController {
   }
 }
 
+const PositionState = {
+  STARTING_STATE: 0,
+  PAUSED: 1,
+  PLAYING: 2,
+  REWOUND_TO_USER_POSITION: 3,
+  REWOUND_TO_START: 4
+}
+
 /**
  * Handles the changes in user bar selection, the current bar number during playback, highlighting those current bars, and rewinding.
  */
@@ -60,41 +66,70 @@ class PositionController {
    * an interface allowing highlighting of a given bar
    * @param {CountInController} countInController the count-in controller for this playback unit
    */
-  constructor(barHighlighterInterface, countInController) {
+  constructor(barHighlighterInterface, countInController, playbackCoordinator) {
+    this.playbackCoordinator = playbackCoordinator
     this.currentUserSelectedBar = -1
-    this.lastUserSelectedBar = -1
-    this.currentBar = -1
+    this.currentPlayPosition = 1
     this.musicRenderer = barHighlighterInterface
     this.countInController = countInController
+    this.state = PositionState.STARTING_STATE
+    this.userHasSelectedBar = false
+  }
+
+  play() {
+    this.state = PositionState.PLAYING
+  }
+  pause() {
+    this.state = PositionState.PAUSED
   }
 
   /**
-   * Trims the front of the BSTR until the currently selected bar is the first element, then prepends the count-in bars
+   * Trims the front of the BSTR until the current bar is the first element, then prepends the count-in bars
+   * Depending on current bar, we get different behaviours
+   *   currentBar = -1: not currently paused, so start from the user-selected bar if there is one (i.e. currentUserSelectedBar !== -1), and the beginning if not
+   *   currentBar !== -1: currently paused, so start the sequence from the bar it's paused at, rewinding to the start of the bar (and including a count-in if requested)
    * @param {BeatSequenceTimeRepresentation} bSTR the raw beat sequence for playback, untrimmed and without a count-in
    * @returns {BeatSequenceTimeRepresentation} the input beat sequence, taken from the current bar number, with the count-in of appropriate length prepended
    */
   createPlayableTimeRepresentation(bSTR) {
-    const trimmedBarSeq = bSTR.trim(this.currentUserSelectedBar)
+    let trimmedBarSeq
+    if (this.state !== PositionState.PAUSED) { // not currently paused
+      if (!this.userHasSelectedBar) { // no bar selected
+        trimmedBarSeq = bSTR.trim(1)
+      }
+      else { // not paused and bar selected
+        trimmedBarSeq = bSTR.trim(this.currentUserSelectedBar)
+      }
+    }
+    else { // paused
+      trimmedBarSeq = bSTR.trim(this.currentPlayPosition)
+    }
     const fullSequence = this.countInController.addCountIn(trimmedBarSeq)
     return fullSequence
   }
+
 
   /**
    * Set user-selected position and current position to the beginning of the full bar sequence, highlight first bar
    */
   resetAllPositions() {
-    this.currentBar = -1
+    this.currentPlayPosition = 1
     this.currentUserSelectedBar = -1
+    this.userHasSelectedBar = false
+    this.state = PositionState.REWOUND_TO_START
     this.musicRenderer.clearAllHighlights()
+    // also, since we're rewinding all the way to the start, we highlight the first bar
+    this.musicRenderer.highlightNormal(this.currentPlayPosition)
   }
 
   /**
    * Set current bar position to user-selected position, highlight current bar
    */
   restoreUserPosition() {
-    this.musicRenderer.cancelHighlight(this.currentBar)
-    this.currentBar = this.currentUserSelectedBar
-    this.musicRenderer.highlightNormal(barNumber)
+    this.state = PositionState.REWOUND_TO_USER_POSITION
+    this.musicRenderer.cancelHighlight(this.currentPlayPosition)
+    this.currentPlayPosition = this.currentUserSelectedBar
+    this.musicRenderer.highlightNormal(this.currentPlayPosition)
   }
 
   /**
@@ -102,10 +137,8 @@ class PositionController {
    * @param {Number} barNumber bar to change to
    */
   changePositionNormal(barNumber) {
-    if (this.currentBar !== -1) {
-      this.musicRenderer.cancelHighlight(this.currentBar)
-    }
-    this.currentBar = barNumber
+    this.musicRenderer.cancelHighlight(this.currentPlayPosition)
+    this.currentPlayPosition = barNumber
     this.musicRenderer.highlightNormal(barNumber)
   }
 
@@ -114,11 +147,30 @@ class PositionController {
    * @param {Number} barNumber bar to change to
    */
   changePositionCountIn(barNumber) {
-    if (this.currentBar !== -1) {
-      this.musicRenderer.cancelHighlight(this.currentBar)
+    if (this.state === PositionState.PAUSED) { // is currently paused
+      this.musicRenderer.cancelHighlight(this.currentPlayPosition)
     }
-    this.currentBar = barNumber
+    this.currentPlayPosition = barNumber
     this.musicRenderer.highlightCountIn(barNumber)
+  }
+
+  /**
+   * Called as the final beat finishes. Clears the highlight at the current bar (presumably the final one), 
+   * moves the current position back to the user-selected position (or the first bar if no user-selected 
+   * position exists), and then highlights the bar at the new current position.
+   */
+  finishSequence() {
+    this.musicRenderer.cancelHighlight(this.currentPlayPosition)
+    if (this.userHasSelectedBar) { // bar currently selected
+      this.currentPlayPosition = this.currentUserSelectedBar
+      this.musicRenderer.highlightNormal(this.currentPlayPosition)
+      this.state = PositionState.REWOUND_TO_USER_POSITION
+    }
+    else { // no bar currently selected, so go back to bar 1
+      this.currentPlayPosition = 1
+      this.musicRenderer.highlightNormal(this.currentPlayPosition)
+      this.state = PositionState.STARTING_STATE
+    }
   }
 
   /**
@@ -127,23 +179,28 @@ class PositionController {
    * @param {Number} barNumber  bar to change to
    */
   changeUserPosition(barNumber) {
-    // TODO
-    //console.log("PlaybackModel.js::PositionController.changeUserPosition() needs playback paused, so the interface needs to pause itself")
-    // this.playbackCoordinator.pausePlaying()
-    if (this.currentUserSelectedBar === barNumber) {
-      this.musicRenderer.cancelHighlight(this.currentUserSelectedBar)
+    if (this.state !== PositionState.PAUSED && this.state !== PositionState.STARTING_STATE) {
+      this.playbackCoordinator.pausePlaying()
+    }
+    if (this.state === PositionState.PAUSED || 
+          this.state === PositionState.REWOUND_TO_START || 
+          this.state === PositionState.REWOUND_TO_USER_POSITION) {  // currently paused
+      // selecting a different bar should always cause a pause/rewind-highlight to be cancelled
+      this.musicRenderer.cancelHighlight(this.currentPlayPosition)
+    }
+    
+    if (this.userHasSelectedBar && this.currentUserSelectedBar === barNumber) { // current user-selected bar has been selected again, so deselect
+      this.userHasSelectedBar = false
+      this.musicRenderer.cancelHighlight(this.currentUserSelectedBar) // should be unmarkBar
       this.currentUserSelectedBar = -1
-      this.lastUserSelectedBar = -1
-    } else {
-      // different selected now from then
-      this.lastUserSelectedBar = this.currentUserSelectedBar
+      this.currentPlayPosition = 1
+    } else { // different selected now from then, so change to the new selection
+      this.musicRenderer.cancelHighlight(this.currentUserSelectedBar) // should be unmarkBar
+      this.userHasSelectedBar = true
       this.currentUserSelectedBar = barNumber
-      this.currentBar = barNumber
-      //console.log("Change - differentiate current playback / user-selected position")
-      if (this.lastUserSelectedBar !== -1) {
-        this.musicRenderer.cancelHighlight(this.lastUserSelectedBar)
-      }
-      this.musicRenderer.highlightNormal(this.currentUserSelectedBar)
+      this.currentPlayPosition = barNumber
+      // should additionally have markBar - needs both the marking and highlighting, since we're setting the user position and current bar position
+      this.musicRenderer.highlightNormal(this.currentUserSelectedBar) 
     }
   }
 
@@ -152,21 +209,24 @@ class PositionController {
    * Resets current position to user position, or if the same, reset to the beginning.
    */
   rewind() {
-    if (this.currentBar === this.currentUserSelectedBar) {
+    if (this.currentPlayPosition === this.currentUserSelectedBar || !this.userHasSelectedBar) {
+      // Either the current bar is the user-selected bar or there isn't a user-selected bar, so go back to the start
       this.resetAllPositions()
     } else {
+      // There is a user-selected bar, and the current bar is not that user-selected bar (i.e. we're paused on a different bar)
       this.restoreUserPosition()
     }
   }
 
   /**
-   * Replaces the bar highlighter interface with a new one for a newly-created MusicRenderer component
+   * Replaces the bar highlighter interface with a new one for a newly-created MusicRenderer component; highlights the current
+   * bar if one exists, or the first bar if not.
    * @param {{ highlightCountIn: (barNumber: Number) => void, highlightNormal: (barNumber: Number) => void}} barHighlighter 
    */
   replaceBarHighlighter(barHighlighter) {
     this.musicRenderer = barHighlighter
-    if (this.currentBar !== -1) {
-      this.musicRenderer.highlightNormal(this.currentBar)
+    if (this.state === PositionState.PAUSED) { // is currently paused
+      this.musicRenderer.highlightNormal(this.currentPlayPosition)
     }
   }
 }
@@ -209,7 +269,7 @@ class PlaybackCoordinator {
   constructor(clickProvider, timeRepProvider, barHighlighter) {
     this.timeRepProvider = timeRepProvider
     this.countInController = new CountInController()
-    this.positionController = new PositionController(barHighlighter, this.countInController)
+    this.positionController = new PositionController(barHighlighter, this.countInController, this)
     this.recursivePlay = new RecursivePlay(clickProvider, this.positionController)
   }
 
@@ -256,6 +316,7 @@ class PlaybackCoordinator {
   startPlaying() {
     const bSTR = getters.getTimeRepresentation()
     const fullSequence = this.positionController.createPlayableTimeRepresentation(bSTR)
+    this.positionController.play()
     this.recursivePlay.playSequence(fullSequence)
   }
 
@@ -264,6 +325,7 @@ class PlaybackCoordinator {
    */
   pausePlaying() {
     this.recursivePlay.pauseSequence()
+    this.positionController.pause()
   }
 
   /**
@@ -315,6 +377,11 @@ class RecursivePlay {
         this.play()
       }, beat.durationInMillis)
     }
+    else { // is final beat
+      window.setTimeout(() => {
+        this.positionController.finishSequence()
+      }, beat.durationInMillis)
+    }
   }
 
   /**
@@ -322,7 +389,6 @@ class RecursivePlay {
    * @param {BeatTimeRepresentation} beat the current beat to play
    */
   playBeat(beat) {
-    console.log(beat)
     if (beat.isFirstBeatOfBar) {
       this.clickProvider.playHigh()
     } else {

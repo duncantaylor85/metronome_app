@@ -73,6 +73,7 @@ export default {
   },
   watch: {
     countInToggle(newVal) {
+      console.log(`countInToggle: ${newVal}`)
       this.countInInterface.toggleCountIn(newVal);
     },
     countInLength(newVal) {
@@ -111,12 +112,10 @@ export default {
 
     const clickProvider = {
       playHigh() {
-        console.log("high beep");
         const highBeep = document.getElementById("highBeep");
         highBeep.play();
       },
       playLow() {
-        console.log("low beep");
         const lowBeep = document.getElementById("lowBeep");
         lowBeep.play();
       },
@@ -128,9 +127,8 @@ export default {
     console.log("HOME MOUNTED");
     this.countInInterface = playbackModel.getCountInInterface();
     this.playbackInterface = playbackModel.getPlaybackInterface();
-    console.log(highBeep);
-    console.log(lowBeep);
     selectDefaultTab(this);
+    this.countInInterface.changeCountInLength(this.countInLength)
   },
   computed: {
     menuButtonModes() {
