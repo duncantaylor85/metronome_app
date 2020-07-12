@@ -2,7 +2,6 @@ import Vue from "vue";
 import { BarSequence, SimpleBeatSequenceCreator } from "@/libraries/DomainModel.js";
 import { PlaybackCoordinator, PlaybackBuilder } from "../libraries/PlaybackModel";
 
-
 /*
   Adapted from https://vuedose.tips/tips/creating-a-store-without-vuex-in-vue-js-2-6/
   
@@ -26,7 +25,7 @@ import { PlaybackCoordinator, PlaybackBuilder } from "../libraries/PlaybackModel
 
 const store = Vue.observable({
   barSequence: new BarSequence(),
-  playback: new PlaybackBuilder()
+  playback: new PlaybackBuilder(),
 });
 
 export const mutators = {
@@ -54,47 +53,48 @@ export const getters = {
     return store.barSequence.getBarCount();
   },
   getTimeRepresentation() {
-    return store.barSequence.getTimeRepresentation(new SimpleBeatSequenceCreator())
-  }
-
+    return store.barSequence.getTimeRepresentation(new SimpleBeatSequenceCreator());
+  },
 };
 
 export const playbackModelSetup = {
   setBarHighlighter(barHighlighter) {
     if (store.playback instanceof PlaybackCoordinator) {
-      store.playback.replaceBarHighlighter(barHighlighter)
-    } 
-    else {
-      store.playback.setBarHighlighter(barHighlighter)
+      store.playback.replaceBarHighlighter(barHighlighter);
+    } else {
+      store.playback.setBarHighlighter(barHighlighter);
     }
+  },
+  setMarker(barMarker) {
+    store.playback.setBarMarker(barMarker);
   },
 
   setClickProvider(clickProvider) {
-    if (store.playback instanceof PlaybackCoordinator) return
-    store.playback.setClickProvider(clickProvider)
+    if (store.playback instanceof PlaybackCoordinator) return;
+    store.playback.setClickProvider(clickProvider);
   },
 
   setup() {
-    if (store.playback instanceof PlaybackCoordinator) return
+    if (store.playback instanceof PlaybackCoordinator) return;
     const timeRepresentationProvider = {
       getTimeRepresentation: getters.getTimeRepresentation,
     };
-    store.playback.setTimeRepProvider(timeRepresentationProvider)
-    store.playback = store.playback.setup()
-  }
-}
+    store.playback.setTimeRepProvider(timeRepresentationProvider);
+    store.playback = store.playback.setup();
+  },
+};
 
 export const playbackModel = {
   getCountInInterface() {
-    if (store.playback instanceof PlaybackBuilder) throw `Tried to getCountInInterface without running setup on the PlaybackBuilder`
-    return store.playback.getCountInInterface()
+    if (store.playback instanceof PlaybackBuilder) throw `Tried to getCountInInterface without running setup on the PlaybackBuilder`;
+    return store.playback.getCountInInterface();
   },
-  getPlaybackInterface() { 
-    if (store.playback instanceof PlaybackBuilder) throw `Tried to getPlaybackInterface without running setup on the PlaybackBuilder`
-    return store.playback.getPlaybackInterface()
+  getPlaybackInterface() {
+    if (store.playback instanceof PlaybackBuilder) throw `Tried to getPlaybackInterface without running setup on the PlaybackBuilder`;
+    return store.playback.getPlaybackInterface();
   },
   getUserPositionInterface() {
-    if (store.playback instanceof PlaybackBuilder) throw `Tried to getUserPositionInterface without running setup on the PlaybackBuilder`
-    return store.playback.getPositionInterface()
-  }
-}
+    if (store.playback instanceof PlaybackBuilder) throw `Tried to getUserPositionInterface without running setup on the PlaybackBuilder`;
+    return store.playback.getPositionInterface();
+  },
+};

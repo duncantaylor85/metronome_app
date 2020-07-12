@@ -48,6 +48,7 @@ export default {
       });
 
       bus.$emit("change-gradient-array");
+      bus.$emit("change-userMark-array");
       this.closeDialog();
     },
     closeDialog() {
