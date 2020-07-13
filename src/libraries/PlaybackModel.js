@@ -113,13 +113,16 @@ class PositionController {
    * Set user-selected position and current position to the beginning of the full bar sequence, highlight first bar
    */
   resetAllPositions() {
+    this.musicRenderer.cancelHighlight(this.currentPlayPosition);
+    this.barMarker.unmarkBar(this.currentUserSelectedBar);
     this.currentPlayPosition = 1;
-    this.currentUserSelectedBar = -1;
+    this.currentUserSelectedBar = 1;
     this.userHasSelectedBar = false;
     this.state = PositionState.REWOUND_TO_START;
-    this.musicRenderer.clearAllHighlights();
+
     // also, since we're rewinding all the way to the start, we highlight the first bar
-    this.musicRenderer.highlightNormal(this.currentPlayPosition);
+    this.musicRenderer.highlightNormal(1);
+    this.barMarker.markBar(1);
   }
 
   /**
