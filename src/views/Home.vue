@@ -43,6 +43,8 @@ import { TimeSignature, BPM, BarSequence, BasicDuration } from "@/libraries/Doma
 import { mutators, getters, playbackModelSetup, playbackModel } from "@/store/store.js";
 import { CountInController, UserPositionController, PlaybackCoordinator } from "@/libraries/PlaybackModel.js";
 import { setupMenuButtons, selectDefaultTab } from "@/libraries/MenuSetup.js";
+import highBeep from "@/assets/highBeep.mp3";
+import lowBeep from "@/assets/lowBeep.mp3";
 
 export default {
   name: "Home",
@@ -69,6 +71,8 @@ export default {
       countInInterface: null,
       playbackInterface: null,
       barNumber: null,
+      highBeep: null,
+      lowBeep: null,
     };
   },
   watch: {
@@ -113,12 +117,12 @@ export default {
 
     const clickProvider = {
       playHigh() {
-        const highBeep = document.getElementById("highBeep");
-        highBeep.play();
+        this.highBeep = new Audio(highBeep);
+        this.highBeep.play();
       },
       playLow() {
-        const lowBeep = document.getElementById("lowBeep");
-        lowBeep.play();
+        this.lowBeep = new Audio(lowBeep);
+        this.lowBeep.play();
       },
     };
     playbackModelSetup.setClickProvider(clickProvider);
