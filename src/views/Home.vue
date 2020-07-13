@@ -73,7 +73,7 @@ export default {
   },
   watch: {
     countInToggle(newVal) {
-      console.log(`countInToggle: ${newVal}`)
+      console.log(`countInToggle: ${newVal}`);
       this.countInInterface.toggleCountIn(newVal);
     },
     countInLength(newVal) {
@@ -84,6 +84,7 @@ export default {
     deleteBar(barNumber) {
       mutators.deleteBar(barNumber);
       bus.$emit("change-gradient-array");
+      bus.$emit("change-userMark-array");
     },
 
     displayAddBarsDialog() {
@@ -128,7 +129,7 @@ export default {
     this.countInInterface = playbackModel.getCountInInterface();
     this.playbackInterface = playbackModel.getPlaybackInterface();
     selectDefaultTab(this);
-    this.countInInterface.changeCountInLength(this.countInLength)
+    this.countInInterface.changeCountInLength(this.countInLength);
   },
   computed: {
     menuButtonModes() {

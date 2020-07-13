@@ -6,9 +6,10 @@
           ><v-icon @click="subButtonStatus.noBarsBehaviour">{{ subButtonStatus.icon }}</v-icon></v-btn
         >
         <v-img v-for="(bar, index) in barCount" :gradient="gradient[index]" @click="selectBar(bar)" :key="index" class="mb-7" max-width="177" src="@/assets/singlebar.jpg"
-          ><p class="ml-1 my-0 font-weight-bold">
+          ><span class="ml-1 my-0 font-weight-bold">
             {{ getTimeSigNumeratorOf(bar) }}
-          </p>
+          </span>
+          <span class="indigo lighten-4" v-if="userMark[index]">▼</span>
           <p class="ml-1 my-0 font-weight-bold">
             {{ getTimeSigDenominatorOf(bar) }}
           </p>
@@ -28,6 +29,7 @@ export default {
   name: "MusicRendering",
   data() {
     return {
+      userMark: [],
       gradient: [],
       normalHighlightColour: "rgba(100,115,201,.33), rgba(100,115,201,.33)",
       countInHighlightColour: "rgba(211, 223, 0,.33), rgba(211, 223, 0,.33)",
@@ -35,6 +37,12 @@ export default {
     };
   },
   methods: {
+    markBar(barNumber) {
+      this.userMark.splice(barNumber - 1, 1, true);
+    },
+    unmarkBar(barNumber) {
+      this.userMark.splice(barNumber - 1, 1, false);
+    },
     selectBar(barNumber) {
       this.userPositionInterface.changeUserPosition(barNumber);
     },
@@ -55,6 +63,12 @@ export default {
     highlightCountIn(barNumber) {
       this.insertHighlight(barNumber, this.countInHighlightColour);
     },
+    getBarMarker() {
+      return {
+        markBar: (barNum) => this.markBar(barNum),
+        unmarkBar: (barNum) => this.unmarkBar(barNum),
+      };
+    },
     getBarHighlighter() {
       return {
         highlightNormal: (barNum) => this.highlightNormal(barNum),
@@ -74,6 +88,12 @@ export default {
       let gradient = tempArray.fill("");
       this.gradient = gradient;
     },
+    clearUserMarkArray() {
+      let tempArray = new Array(this.barCount);
+      let userMark = tempArray.fill(false);
+      this.userMark = userMark;
+      console.log(userMark);
+    },
   },
   computed: {
     barCount: function() {
@@ -87,7 +107,9 @@ export default {
   created() {
     console.log("MR CREATED");
     bus.$on("change-gradient-array", () => this.clearGradientArray());
+    bus.$on("change-userMark-array", () => this.clearUserMarkArray());
     playbackModelSetup.setBarHighlighter(this.getBarHighlighter());
+    playbackModelSetup.setMarker(this.getBarMarker());
     playbackModelSetup.setup();
   },
   beforeUpdate() {},
