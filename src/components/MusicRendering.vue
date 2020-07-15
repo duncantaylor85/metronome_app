@@ -92,7 +92,6 @@ export default {
       let tempArray = new Array(this.barCount);
       let userMark = tempArray.fill(false);
       this.userMark = userMark;
-      console.log(userMark);
     },
   },
   computed: {
@@ -101,11 +100,9 @@ export default {
     },
   },
   mounted() {
-    console.log("MR MOUNTED");
     this.userPositionInterface = playbackModel.getUserPositionInterface();
   },
   created() {
-    console.log("MR CREATED");
     bus.$on("change-gradient-array", () => this.clearGradientArray());
     bus.$on("change-userMark-array", () => this.clearUserMarkArray());
     playbackModelSetup.setBarHighlighter(this.getBarHighlighter());

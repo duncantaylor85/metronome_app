@@ -64,7 +64,7 @@ class PositionController {
    * an interface allowing highlighting of a given bar
    * @param {CountInController} countInController the count-in controller for this playback unit
    */
-  constructor(barHighlighterInterface, countInController, playbackCoordinator, barMarker) {
+  constructor(barHighlighterInterface, countInController, playbackCoordinator, barMarker, homeInterface) {
     this.playbackCoordinator = playbackCoordinator;
     this.currentUserSelectedBar = -1;
     this.currentPlayPosition = 1;
@@ -73,6 +73,7 @@ class PositionController {
     this.countInController = countInController;
     this.state = PositionState.STARTING_STATE;
     this.userHasSelectedBar = false;
+    this.homeInterface = homeInterface;
   }
 
   play() {
@@ -164,6 +165,7 @@ class PositionController {
    * position exists), and then highlights the bar at the new current position.
    */
   finishSequence() {
+    this.homeInterface.changePauseToPlay();
     this.musicRenderer.cancelHighlight(this.currentPlayPosition);
     if (this.userHasSelectedBar) {
       // bar currently selected
@@ -184,6 +186,7 @@ class PositionController {
    * @param {Number} barNumber  bar to change to
    */
   changeUserPosition(barNumber) {
+    this.homeInterface.changePauseToPlay();
     if (this.state !== PositionState.PAUSED && this.state !== PositionState.STARTING_STATE) {
       this.playbackCoordinator.pausePlaying();
     }
@@ -262,9 +265,14 @@ class PlaybackBuilder {
     this.clickProvider = clickProvider;
   }
 
+  setHomeInterface(homeInterface) {
+    this.homeInterface = homeInterface;
+  }
+
   setup() {
-    if (!this.timeRepProvider || !this.barHighlighter || !this.clickProvider || !this.barMarker) throw "Tried to create a playback builder where at least one set parameter was missing";
-    return new PlaybackCoordinator(this.clickProvider, this.timeRepProvider, this.barHighlighter, this.barMarker);
+    if (!this.timeRepProvider || !this.barHighlighter || !this.clickProvider || !this.barMarker || !this.homeInterface)
+      throw "Tried to create a playback builder where at least one set parameter was missing";
+    return new PlaybackCoordinator(this.clickProvider, this.timeRepProvider, this.barHighlighter, this.barMarker, this.homeInterface);
   }
 }
 
@@ -279,11 +287,11 @@ class PlaybackCoordinator {
    * beat sequence time representation
    * @param {{ highlightCountIn: (barNumber: Number) => void, highlightNormal: (barNumber: Number) => void}} barHighlighter an interface allowing highlighting of a given bar
    */
-  constructor(clickProvider, timeRepProvider, barHighlighter, barMarker) {
+  constructor(clickProvider, timeRepProvider, barHighlighter, barMarker, homeInterface) {
     this.timeRepProvider = timeRepProvider;
     this.countInController = new CountInController();
-    this.positionController = new PositionController(barHighlighter, this.countInController, this, barMarker);
-    this.recursivePlay = new RecursivePlay(clickProvider, this.positionController);
+    this.positionController = new PositionController(barHighlighter, this.countInController, this, barMarker, homeInterface);
+    this.recursivePlay = new RecursivePlay(clickProvider, this.positionController, homeInterface);
   }
 
   /**
