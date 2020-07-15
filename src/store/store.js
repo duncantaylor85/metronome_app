@@ -68,7 +68,9 @@ export const playbackModelSetup = {
   setMarker(barMarker) {
     store.playback.setBarMarker(barMarker);
   },
-
+  setHomeInterface(homeInterface) {
+    store.playback.setHomeInterface(homeInterface);
+  },
   setClickProvider(clickProvider) {
     if (store.playback instanceof PlaybackCoordinator) return;
     store.playback.setClickProvider(clickProvider);

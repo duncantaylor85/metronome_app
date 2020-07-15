@@ -11,8 +11,9 @@
           </div>
 
           <div class="pt-1">
-            <v-btn @click="playbackInterface.startPlaying()"><v-icon large>mdi-play</v-icon></v-btn>
-            <v-btn @click="playbackInterface.pausePlaying()"><v-icon large>mdi-pause</v-icon></v-btn>
+            <v-btn @click="playPause"
+              ><v-icon large>{{ playPauseButton.icon }}</v-icon></v-btn
+            >
             <v-btn @click="playbackInterface.rewind()"><v-icon large>mdi-rewind</v-icon></v-btn>
           </div>
         </v-card>
@@ -73,11 +74,14 @@ export default {
       barNumber: null,
       highBeep: null,
       lowBeep: null,
+      playPauseButton: {
+        status: "paused",
+        icon: "mdi-play",
+      },
     };
   },
   watch: {
     countInToggle(newVal) {
-      console.log(`countInToggle: ${newVal}`);
       this.countInInterface.toggleCountIn(newVal);
     },
     countInLength(newVal) {
@@ -85,6 +89,23 @@ export default {
     },
   },
   methods: {
+    playPause() {
+      if (this.playPauseButton.status === "paused") {
+        this.playbackInterface.startPlaying();
+        this.playPauseButton.status = "playing";
+        this.playPauseButton.icon = "mdi-pause";
+      } else {
+        this.playbackInterface.pausePlaying();
+        this.playPauseButton.status = "paused";
+        this.playPauseButton.icon = "mdi-play";
+      }
+    },
+    changePauseToPlay() {
+      if (this.playPauseButton.status === "playing") {
+        this.playPauseButton.status = "paused";
+        this.playPauseButton.icon = "mdi-play";
+      }
+    },
     deleteBar(barNumber) {
       mutators.deleteBar(barNumber);
       bus.$emit("change-gradient-array");
@@ -112,24 +133,29 @@ export default {
   },
   beforeCreate() {},
   created() {
-    console.log("HOME CREATED");
     setupMenuButtons(this);
-
+    let self = this;
+    const homeInterface = {
+      changePauseToPlay() {
+        self.playPauseButton.status = "paused";
+        self.playPauseButton.icon = "mdi-play";
+      },
+    };
     const clickProvider = {
       playHigh() {
-        this.highBeep = new Audio(highBeep);
-        this.highBeep.play();
+        self.highBeep = new Audio(highBeep);
+        self.highBeep.play();
       },
       playLow() {
-        this.lowBeep = new Audio(lowBeep);
-        this.lowBeep.play();
+        self.lowBeep = new Audio(lowBeep);
+        self.lowBeep.play();
       },
     };
     playbackModelSetup.setClickProvider(clickProvider);
+    playbackModelSetup.setHomeInterface(homeInterface);
   },
   beforeMount() {},
   mounted() {
-    console.log("HOME MOUNTED");
     this.countInInterface = playbackModel.getCountInInterface();
     this.playbackInterface = playbackModel.getPlaybackInterface();
     selectDefaultTab(this);
