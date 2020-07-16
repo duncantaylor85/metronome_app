@@ -94,6 +94,8 @@ export default {
         this.playbackInterface.startPlaying();
         this.playPauseButton.status = "playing";
         this.playPauseButton.icon = "mdi-pause";
+        this.selectMode("home");
+        this.menuData.tabSelected = 0;
       } else {
         this.playbackInterface.pausePlaying();
         this.playPauseButton.status = "paused";
