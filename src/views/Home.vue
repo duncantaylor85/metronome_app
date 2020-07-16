@@ -116,7 +116,7 @@ export default {
         playbackInterface.rewind()
       }
       else {
-        console.log("need to do something when play is clicked without bars")
+        console.log("need to do something when rewind is clicked without bars")
       }
     },
     deleteBar(barNumber) {
