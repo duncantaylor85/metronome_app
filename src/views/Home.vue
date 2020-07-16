@@ -131,6 +131,10 @@ export default {
 
     selectMode(mode) {
       this.menuData.subButtonStatus = this.menuData.menuButtons[mode].subButtonStatus;
+      console.log(mode);
+      if (mode !== "home") {
+        this.playPause();
+      }
     },
   },
   beforeCreate() {},
