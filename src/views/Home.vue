@@ -113,7 +113,7 @@ export default {
     },
     rewind() {
       if (getters.getBarCount() > 0) {
-        playbackInterface.rewind()
+        this.playbackInterface.rewind()
       }
       else {
         console.log("need to do something when rewind is clicked without bars")
