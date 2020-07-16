@@ -14,7 +14,7 @@
             <v-btn @click="playPause"
               ><v-icon large>{{ playPauseButton.icon }}</v-icon></v-btn
             >
-            <v-btn @click="playbackInterface.rewind()"><v-icon large>mdi-rewind</v-icon></v-btn>
+            <v-btn @click="rewind()"><v-icon large>mdi-rewind</v-icon></v-btn>
           </div>
         </v-card>
         <v-card class="ml-6">
@@ -91,9 +91,14 @@ export default {
   methods: {
     playPause() {
       if (this.playPauseButton.status === "paused") {
-        this.playbackInterface.startPlaying();
-        this.playPauseButton.status = "playing";
-        this.playPauseButton.icon = "mdi-pause";
+        if (getters.getBarCount() > 0) {
+          this.playbackInterface.startPlaying();
+          this.playPauseButton.status = "playing";
+          this.playPauseButton.icon = "mdi-pause";
+        }
+        else {
+          console.log("need to do something when play is clicked without bars")
+        }
       } else {
         this.playbackInterface.pausePlaying();
         this.playPauseButton.status = "paused";
@@ -104,6 +109,14 @@ export default {
       if (this.playPauseButton.status === "playing") {
         this.playPauseButton.status = "paused";
         this.playPauseButton.icon = "mdi-play";
+      }
+    },
+    rewind() {
+      if (getters.getBarCount() > 0) {
+        playbackInterface.rewind()
+      }
+      else {
+        console.log("need to do something when play is clicked without bars")
       }
     },
     deleteBar(barNumber) {
