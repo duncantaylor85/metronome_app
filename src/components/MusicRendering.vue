@@ -2,9 +2,8 @@
   <div class="music-renderer">
     <v-container>
       <v-row class="d-flex flex-wrap">
-        <v-btn small fab v-if="barCount == 0 && subButtonStatus.noBarsBehaviour"
-          ><v-icon @click="subButtonStatus.noBarsBehaviour">{{ subButtonStatus.icon }}</v-icon>
-          <!-- Need to change the @click to v-btn !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+        <v-btn @click="subButtonStatus.noBarsBehaviour" small fab v-if="barCount == 0 && subButtonStatus.noBarsBehaviour"
+          ><v-icon>{{ subButtonStatus.icon }}</v-icon>
         </v-btn>
         <v-img v-for="(bar, index) in barCount" :gradient="gradient[index]" @click="selectBar(bar)" :key="index" class="mb-7" max-width="177" src="@/assets/singlebar.jpg"
           ><span class="ml-1 my-0 font-weight-bold">
