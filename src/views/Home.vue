@@ -89,20 +89,27 @@ export default {
     },
   },
   methods: {
+    play() {
+      if (getters.getBarCount() > 0) {
+        this.playbackInterface.startPlaying();
+        this.playPauseButton.status = "playing";
+        this.playPauseButton.icon = "mdi-pause";
+        this.selectMode("home");
+        this.menuData.tabSelected = 0;
+      } else {
+        console.log("need to do something when play is clicked without bars");
+      }
+    },
+    pause() {
+      this.playbackInterface.pausePlaying();
+      this.playPauseButton.status = "paused";
+      this.playPauseButton.icon = "mdi-play";
+    },
     playPause() {
       if (this.playPauseButton.status === "paused") {
-        if (getters.getBarCount() > 0) {
-          this.playbackInterface.startPlaying();
-          this.playPauseButton.status = "playing";
-          this.playPauseButton.icon = "mdi-pause";
-        }
-        else {
-          console.log("need to do something when play is clicked without bars")
-        }
+        this.play();
       } else {
-        this.playbackInterface.pausePlaying();
-        this.playPauseButton.status = "paused";
-        this.playPauseButton.icon = "mdi-play";
+        this.pause();
       }
     },
     changePauseToPlay() {
@@ -113,10 +120,9 @@ export default {
     },
     rewind() {
       if (getters.getBarCount() > 0) {
-        this.playbackInterface.rewind()
-      }
-      else {
-        console.log("need to do something when rewind is clicked without bars")
+        this.playbackInterface.rewind();
+      } else {
+        console.log("need to do something when rewind is clicked without bars");
       }
     },
     deleteBar(barNumber) {
@@ -142,6 +148,9 @@ export default {
 
     selectMode(mode) {
       this.menuData.subButtonStatus = this.menuData.menuButtons[mode].subButtonStatus;
+      if (mode !== "home" && this.playPauseButton.status === "playing") {
+        this.playPause();
+      }
     },
   },
   beforeCreate() {},
