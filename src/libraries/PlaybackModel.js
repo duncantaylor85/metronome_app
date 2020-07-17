@@ -220,6 +220,7 @@ class PositionController {
    * Resets current position to user position, or if the same, reset to the beginning.
    */
   rewind() {
+    this.homeInterface.changePauseToPlay()
     if (this.currentPlayPosition === this.currentUserSelectedBar || !this.userHasSelectedBar) {
       // Either the current bar is the user-selected bar or there isn't a user-selected bar, so go back to the start
       this.resetAllPositions();
