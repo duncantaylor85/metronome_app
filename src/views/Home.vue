@@ -89,28 +89,27 @@ export default {
     },
   },
   methods: {
-    playPause() {
-      if (this.playPauseButton.status === "paused") {
-<<<<<<< HEAD
+    play() {
+      if (getters.getBarCount() > 0) {
         this.playbackInterface.startPlaying();
         this.playPauseButton.status = "playing";
         this.playPauseButton.icon = "mdi-pause";
         this.selectMode("home");
         this.menuData.tabSelected = 0;
-=======
-        if (getters.getBarCount() > 0) {
-          this.playbackInterface.startPlaying();
-          this.playPauseButton.status = "playing";
-          this.playPauseButton.icon = "mdi-pause";
-        }
-        else {
-          console.log("need to do something when play is clicked without bars")
-        }
->>>>>>> master
       } else {
-        this.playbackInterface.pausePlaying();
-        this.playPauseButton.status = "paused";
-        this.playPauseButton.icon = "mdi-play";
+        console.log("need to do something when play is clicked without bars");
+      }
+    },
+    pause() {
+      this.playbackInterface.pausePlaying();
+      this.playPauseButton.status = "paused";
+      this.playPauseButton.icon = "mdi-play";
+    },
+    playPause() {
+      if (this.playPauseButton.status === "paused") {
+        this.play();
+      } else {
+        this.pause();
       }
     },
     changePauseToPlay() {
@@ -121,10 +120,9 @@ export default {
     },
     rewind() {
       if (getters.getBarCount() > 0) {
-        this.playbackInterface.rewind()
-      }
-      else {
-        console.log("need to do something when rewind is clicked without bars")
+        this.playbackInterface.rewind();
+      } else {
+        console.log("need to do something when rewind is clicked without bars");
       }
     },
     deleteBar(barNumber) {
@@ -150,8 +148,7 @@ export default {
 
     selectMode(mode) {
       this.menuData.subButtonStatus = this.menuData.menuButtons[mode].subButtonStatus;
-      console.log(mode);
-      if (mode !== "home") {
+      if (mode !== "home" && this.playPauseButton.status === "playing") {
         this.playPause();
       }
     },
