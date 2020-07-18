@@ -112,12 +112,6 @@ export default {
         this.pause();
       }
     },
-    changePauseToPlay() {
-      if (this.playPauseButton.status === "playing") {
-        this.playPauseButton.status = "paused";
-        this.playPauseButton.icon = "mdi-play";
-      }
-    },
     rewind() {
       if (getters.getBarCount() > 0) {
         this.playbackInterface.rewind();
