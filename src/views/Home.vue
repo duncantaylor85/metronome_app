@@ -44,8 +44,6 @@ import { TimeSignature, BPM, BarSequence, BasicDuration } from "@/libraries/Doma
 import { mutators, getters, playbackModelSetup, playbackModel } from "@/store/store.js";
 import { CountInController, UserPositionController, PlaybackCoordinator } from "@/libraries/PlaybackModel.js";
 import { setupMenuButtons, selectDefaultTab } from "@/libraries/MenuSetup.js";
-import highBeep from "@/assets/highBeep.mp3";
-import lowBeep from "@/assets/lowBeep.mp3";
 
 export default {
   name: "Home",
@@ -72,8 +70,6 @@ export default {
       countInInterface: null,
       playbackInterface: null,
       barNumber: null,
-      highBeep: null,
-      lowBeep: null,
       playPauseButton: {
         status: "paused",
         icon: "mdi-play",
