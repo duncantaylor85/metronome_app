@@ -446,13 +446,38 @@ class RecursivePlay {
   }
 }
 
+/**
+ * Provides access to click sound playing.
+ */
 class ClickProvider {
-  playHigh() {
-    this.highBeep = new Audio(highBeep);
-    this.highBeep.play();
+  /**
+   * Create a new click provider storing 16 cycling high and low clicks.
+   */
+  constructor() {
+    this.highBeeps = []
+    this.lowBeeps = []
+    this.clickCount = 16 // why 16? well, why not?
+    this.currHigh = 0
+    this.currLow = 0
+    for (let i = 0; i < this.clickCount; i++) {
+      this.highBeeps.push(new Audio(highBeep))
+      this.lowBeeps.push(new Audio(lowBeep))
+    }
   }
+
+  /**
+   * Plays a high beep/click.
+   */
+  playHigh() {
+    this.highBeeps[this.currHigh].play();
+    this.currHigh = (this.currHigh + 1) % this.clickCount // keep within array bounds
+  }
+
+  /**
+   * Plays a low beep/click.
+   */
   playLow() {
-    this.lowBeep = new Audio(lowBeep);
-    this.lowBeep.play();
+    this.lowBeeps[this.currLow].play()
+    this.currLow = (this.currLow + 1) % this.clickCount // keep within array bounds
   }
 }
