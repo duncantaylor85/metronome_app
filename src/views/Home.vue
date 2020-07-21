@@ -157,17 +157,6 @@ export default {
         self.playPauseButton.icon = "mdi-play";
       },
     };
-    const clickProvider = {
-      playHigh() {
-        self.highBeep = new Audio(highBeep);
-        self.highBeep.play();
-      },
-      playLow() {
-        self.lowBeep = new Audio(lowBeep);
-        self.lowBeep.play();
-      },
-    };
-    playbackModelSetup.setClickProvider(clickProvider);
     playbackModelSetup.setHomeInterface(homeInterface);
   },
   beforeMount() {},

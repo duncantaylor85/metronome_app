@@ -71,10 +71,6 @@ export const playbackModelSetup = {
   setHomeInterface(homeInterface) {
     store.playback.setHomeInterface(homeInterface);
   },
-  setClickProvider(clickProvider) {
-    if (store.playback instanceof PlaybackCoordinator) return;
-    store.playback.setClickProvider(clickProvider);
-  },
 
   setup() {
     if (store.playback instanceof PlaybackCoordinator) return;
