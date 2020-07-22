@@ -244,6 +244,30 @@ class PositionController {
       this.musicRenderer.highlightNormal(this.currentPlayPosition);
     }
   }
+
+  /**
+   * Clears the user position marker and highlighted bar, if any.
+   */
+  clearMarkerAndHighlight() {
+    if (this.currentPlayPosition !== -1) {
+      this.musicRenderer.cancelHighlight(this.currentPlayPosition)
+    }
+    if (this.currentUserSelectedBar !== -1) {
+      this.barMarker.unmarkBar(this.currentUserSelectedBar)
+    }
+  }
+
+  /**
+   * Restore the user position marker and highlighted bar, if any.
+   */
+  applyMarkAndHighlight() {
+    if (this.currentPlayPosition !== -1) {
+      this.musicRenderer.highlightNormal(this.currentPlayPosition)
+    }
+    if (this.currentUserSelectedBar !== -1) {
+      this.barMarker.markBar(this.currentUserSelectedBar)
+    }
+  }
 }
 
 class PlaybackBuilder {
@@ -285,6 +309,7 @@ class PlaybackCoordinator {
    * @param {{ getTimeRepresentation: () => BeatSequenceTimeRepresentation }} timeRepProvider interface to a provider of the current bar sequence's
    * beat sequence time representation
    * @param {{ highlightCountIn: (barNumber: Number) => void, highlightNormal: (barNumber: Number) => void}} barHighlighter an interface allowing highlighting of a given bar
+   * @param {{ changePauseToPlay: () => void }} homeInterface the interface to the Home component, allowing play/pause button state toggle
    */
   constructor(timeRepProvider, barHighlighter, barMarker, homeInterface) {
     this.timeRepProvider = timeRepProvider;
@@ -304,11 +329,16 @@ class PlaybackCoordinator {
   }
 
   /**
-   * @returns {{ changeUserPosition: (barNumber: Number) => void }} the UI's interface to the user position portion of the position controller
+   * @returns {{ 
+   *  changeUserPosition: (barNumber: Number) => void, 
+   *  clearMarkAndHighlight: () => void,
+   *  applyMarkAndHighlight: () => void }} the UI's interface to the user position portion of the position controller
    */
   getPositionInterface() {
     return {
       changeUserPosition: (barNum) => this.positionController.changeUserPosition(barNum), // needed lambda or "this" produces errors
+      clearMarkAndHighlight: () => this.positionController.clearMarkerAndHighlight(),
+      applyMarkAndHighlight: () => this.positionController.applyMarkAndHighlight()
     };
   }
 

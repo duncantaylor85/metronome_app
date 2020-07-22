@@ -74,7 +74,6 @@ export default {
         highlightNormal: (barNum) => this.highlightNormal(barNum),
         highlightCountIn: (barNum) => this.highlightCountIn(barNum),
         cancelHighlight: (barNum) => this.cancelHighlight(barNum),
-        clearAllHighlights: () => this.clearAllHighlights(),
       };
     },
     clearAllHighlights() {

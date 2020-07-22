@@ -69,6 +69,7 @@ export default {
       barHighlighter: null,
       countInInterface: null,
       playbackInterface: null,
+      positionInterface: null,
       barNumber: null,
       playPauseButton: {
         status: "paused",
@@ -141,6 +142,13 @@ export default {
       if (mode !== "home" && this.playPauseButton.status === "playing") {
         this.playPause();
       }
+      // Remove current user marking and current position highlight if moving to a non-"home" mode
+      if (mode !== "home") {
+        this.positionInterface.clearMarkAndHighlight()
+      }
+      else {
+        this.positionInterface.applyMarkAndHighlight()
+      }
     },
   },
   beforeCreate() {},
@@ -159,6 +167,7 @@ export default {
   mounted() {
     this.countInInterface = playbackModel.getCountInInterface();
     this.playbackInterface = playbackModel.getPlaybackInterface();
+    this.positionInterface = playbackModel.getUserPositionInterface();
     selectDefaultTab(this);
     this.countInInterface.changeCountInLength(this.countInLength);
   },
