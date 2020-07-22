@@ -1,5 +1,7 @@
 import { getters } from "@/store/store.js";
 import { BeatSequenceTimeRepresentation, BeatTimeRepresentation } from "@/libraries/DomainModel.js";
+import highBeep from "@/assets/highBeep.mp3";
+import lowBeep from "@/assets/lowBeep.mp3";
 
 export { PositionController, CountInController, PlaybackCoordinator, PlaybackBuilder };
 
@@ -262,18 +264,14 @@ class PlaybackBuilder {
     this.barMarker = barMarker;
   }
 
-  setClickProvider(clickProvider) {
-    this.clickProvider = clickProvider;
-  }
-
   setHomeInterface(homeInterface) {
     this.homeInterface = homeInterface;
   }
 
   setup() {
-    if (!this.timeRepProvider || !this.barHighlighter || !this.clickProvider || !this.barMarker || !this.homeInterface)
+    if (!this.timeRepProvider || !this.barHighlighter || !this.barMarker || !this.homeInterface)
       throw "Tried to create a playback builder where at least one set parameter was missing";
-    return new PlaybackCoordinator(this.clickProvider, this.timeRepProvider, this.barHighlighter, this.barMarker, this.homeInterface);
+    return new PlaybackCoordinator(this.timeRepProvider, this.barHighlighter, this.barMarker, this.homeInterface);
   }
 }
 
@@ -288,11 +286,11 @@ class PlaybackCoordinator {
    * beat sequence time representation
    * @param {{ highlightCountIn: (barNumber: Number) => void, highlightNormal: (barNumber: Number) => void}} barHighlighter an interface allowing highlighting of a given bar
    */
-  constructor(clickProvider, timeRepProvider, barHighlighter, barMarker, homeInterface) {
+  constructor(timeRepProvider, barHighlighter, barMarker, homeInterface) {
     this.timeRepProvider = timeRepProvider;
     this.countInController = new CountInController();
     this.positionController = new PositionController(barHighlighter, this.countInController, this, barMarker, homeInterface);
-    this.recursivePlay = new RecursivePlay(clickProvider, this.positionController, homeInterface);
+    this.recursivePlay = new RecursivePlay(this.positionController, homeInterface);
   }
 
   /**
@@ -367,10 +365,10 @@ class RecursivePlay {
    * @param {{ playHigh: () => void, playLow: () => void }} clickProvider interface to audio playback for high and low clicks
    * @param {PositionController} positionController this playback unit's position controller
    */
-  constructor(clickProvider, positionController) {
+  constructor(positionController) {
     this.cancelHandle = null;
     this.currentIndex = null;
-    this.clickProvider = clickProvider;
+    this.clickProvider = new ClickProvider();
     this.positionController = positionController;
     this.bSTR = null;
   }
@@ -445,5 +443,41 @@ class RecursivePlay {
     window.clearTimeout(this.cancelObject);
     let barNumber = this.bSTR.getBeat(this.currentIndex).associatedBarNumber;
     this.positionController.changePositionNormal(barNumber);
+  }
+}
+
+/**
+ * Provides access to click sound playing.
+ */
+class ClickProvider {
+  /**
+   * Create a new click provider storing 16 cycling high and low clicks.
+   */
+  constructor() {
+    this.highBeeps = []
+    this.lowBeeps = []
+    this.clickCount = 16 // why 16? well, why not?
+    this.currHigh = 0
+    this.currLow = 0
+    for (let i = 0; i < this.clickCount; i++) {
+      this.highBeeps.push(new Audio(highBeep))
+      this.lowBeeps.push(new Audio(lowBeep))
+    }
+  }
+
+  /**
+   * Plays a high beep/click.
+   */
+  playHigh() {
+    this.highBeeps[this.currHigh].play();
+    this.currHigh = (this.currHigh + 1) % this.clickCount // keep within array bounds
+  }
+
+  /**
+   * Plays a low beep/click.
+   */
+  playLow() {
+    this.lowBeeps[this.currLow].play()
+    this.currLow = (this.currLow + 1) % this.clickCount // keep within array bounds
   }
 }
