@@ -111,6 +111,8 @@ export default {
     },
     rewind() {
       if (getters.getBarCount() > 0) {
+        this.selectMode("home");
+        this.menuData.tabSelected = 0;
         this.playbackInterface.rewind();
       } else {
         console.log("need to do something when rewind is clicked without bars");
