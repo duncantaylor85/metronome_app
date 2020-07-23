@@ -202,6 +202,9 @@ class PositionController {
    */
   rewind() {
     this.homeInterface.changePauseToPlay()
+    if (this.currentUserSelectedBar === -1) {
+      this.currentUserSelectedBar = 1
+    }
     if (this.currentPlayPosition === this.currentUserSelectedBar) {
       // Either the current bar is the user-selected bar or there isn't a user-selected bar, so go back to the start
       this.resetAllPositions()
@@ -448,9 +451,15 @@ class RecursivePlay {
    * Stop playing and store the current position.
    */
   pauseSequence() {
-    window.clearTimeout(this.cancelObject)
-    let barNumber = this.bSTR.getBeat(this.currentIndex).associatedBarNumber
-    this.positionController.changePositionNormal(barNumber)
+    // Make sure that we actually have a timeout and BSTR! it's possible for pause to be called from a bar-click without having 
+    // ever called play()
+    if (this.cancelObject) {
+      window.clearTimeout(this.cancelObject)
+    }
+    if (this.bSTR) {
+      let barNumber = this.bSTR.getBeat(this.currentIndex).associatedBarNumber
+      this.positionController.changePositionNormal(barNumber)
+    }
   }
 }
 
