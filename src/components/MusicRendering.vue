@@ -14,7 +14,7 @@
             {{ getTimeSigDenominatorOf(bar) }}
           </p>
 
-          <v-btn class="mt-6 mr-n3" color="white" absolute top right small fab v-if="subButtonStatus.visibility" @click.native="subButtonStatus.executeFunction(bar)"
+          <v-btn class="mt-6 mr-n3" color="white" absolute top right small fab v-if="subButtonStatus.visibility" @click.native.stop="subButtonStatus.executeFunction(bar)"
             ><v-icon>{{ subButtonStatus.icon }}</v-icon></v-btn
           >
         </v-img>
@@ -44,7 +44,9 @@ export default {
       this.userMark.splice(barNumber - 1, 1, false);
     },
     selectBar(barNumber) {
-      this.userPositionInterface.changeUserPosition(barNumber);
+      if (this.subButtonStatus.clickableBars) {
+        this.userPositionInterface.changeUserPosition(barNumber);
+      }
     },
     getTimeSigNumeratorOf: function(bar) {
       // replaces $store.getters
