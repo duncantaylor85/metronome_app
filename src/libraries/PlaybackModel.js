@@ -243,12 +243,13 @@ class PositionController {
    * Restore the user position marker and highlighted bar, if any.
    */
   applyMarkAndHighlight() {
+    if (this.currentUserSelectedBar === -1) {
+      this.currentUserSelectedBar = 1
+    }
     if (this.currentPlayPosition !== -1) {
       this.musicRenderer.highlightNormal(this.currentPlayPosition)
     }
-    if (this.currentUserSelectedBar !== -1) {
-      this.barMarker.markBar(this.currentUserSelectedBar)
-    }
+    this.barMarker.markBar(this.currentUserSelectedBar)
   }
 }
 
