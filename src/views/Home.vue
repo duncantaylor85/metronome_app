@@ -93,6 +93,7 @@ export default {
         this.selectMode("home");
         this.menuData.tabSelected = 0;
       } else {
+        bus.$emit("animate-plus-button");
         console.log("need to do something when play is clicked without bars");
       }
     },
