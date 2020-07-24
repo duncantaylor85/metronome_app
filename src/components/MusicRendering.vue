@@ -2,9 +2,10 @@
   <div class="music-renderer">
     <v-container>
       <v-row class="d-flex flex-wrap">
-        <v-btn @click="subButtonStatus.noBarsBehaviour" small fab v-if="barCount == 0 && subButtonStatus.noBarsBehaviour"
+        <v-btn :class="{ plusButton: plusButtonBeat }" color="black" @click="subButtonStatus.noBarsBehaviour" small icon v-if="barCount == 0 && subButtonStatus.noBarsBehaviour"
           ><v-icon>{{ subButtonStatus.icon }}</v-icon>
         </v-btn>
+        <v-btn @click="activatePlusButtonBeat">Activate</v-btn>
         <v-img v-for="(bar, index) in barCount" :gradient="gradient[index]" @click="selectBar(bar)" :key="index" class="mb-7" max-width="177" src="@/assets/singlebar.jpg"
           ><span class="ml-1 my-0 font-weight-bold">
             {{ getTimeSigNumeratorOf(bar) }}
@@ -14,7 +15,7 @@
             {{ getTimeSigDenominatorOf(bar) }}
           </p>
 
-          <v-btn class="mt-6 mr-n3" color="white" absolute top right small fab v-if="subButtonStatus.visibility" @click.native="subButtonStatus.executeFunction(bar)"
+          <v-btn class="mt-n5 mr-n5" color="black" absolute top right icon large v-if="subButtonStatus.visibility" @click.native="subButtonStatus.executeFunction(bar)"
             ><v-icon>{{ subButtonStatus.icon }}</v-icon></v-btn
           >
         </v-img>
@@ -29,6 +30,7 @@ export default {
   name: "MusicRendering",
   data() {
     return {
+      plusButtonBeat: false,
       userMark: [],
       gradient: [],
       normalHighlightColour: "rgba(100,115,201,.33), rgba(100,115,201,.33)",
@@ -37,6 +39,13 @@ export default {
     };
   },
   methods: {
+    activatePlusButtonBeat() {
+      this.plusButtonBeat = true;
+      setTimeout(() => {
+        this.plusButtonBeat = false;
+      }, 1400);
+    },
+
     markBar(barNumber) {
       this.userMark.splice(barNumber - 1, 1, true);
     },
@@ -114,3 +123,24 @@ export default {
   props: ["subButtonStatus"],
 };
 </script>
+
+<style scoped>
+/* . {
+  -webkit-transform: scale(2);
+  -moz-transform: scale(2);
+  -o-transform: scale(2);
+  -ms-transform: scale(2);
+  transform: scale(2);
+} */
+.plusButton {
+  animation: scaler 0.7s 2 linear;
+}
+@keyframes scaler {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.5);
+  }
+}
+</style>
