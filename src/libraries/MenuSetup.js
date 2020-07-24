@@ -1,27 +1,30 @@
 export function setupMenuButtons(menuComponent) {
   menuComponent.menuData.menuButtons = [];
   const menuButtonsToLoad = [
-    initialiseMenuButtons("Home", "home", "", (barNumber) => {}, null),
+    initialiseMenuButtons("Home", "home", "", (barNumber) => {}, null, true),
     initialiseMenuButtons(
       "Add",
       "add",
       "mdi-plus-circle",
       menuComponent.displayAddBarsDialog,
-      menuComponent.displayAddBarsDialog
+      menuComponent.displayAddBarsDialog,
+      false
     ),
     initialiseMenuButtons(
       "Edit",
       "edit",
       "mdi-pencil",
       menuComponent.displayEditBarDialog,
-      null
+      null,
+      false
     ),
     initialiseMenuButtons(
       "Delete",
       "delete",
       "mdi-minus-circle",
       menuComponent.deleteBar,
-      null
+      null,
+      false
     ),
   ];
 
@@ -44,13 +47,15 @@ function assignSubButtonStatus(
   visibility,
   icon,
   executeFunction,
-  noBarsBehaviour
+  noBarsBehaviour,
+  clickableBars
 ) {
   return {
     visibility,
     icon,
     executeFunction,
     noBarsBehaviour, // null for no behaviour and don't draw a button; otherwise use the standard icon with the given behaviour
+    clickableBars // are bars clickable? do they respond to click-events?
   };
 }
 
@@ -59,7 +64,8 @@ function initialiseMenuButtons(
   mode,
   subButtonIcon,
   subButtonExecuteFunction,
-  subButtonNoBarsBehaviour
+  subButtonNoBarsBehaviour,
+  subButtonBarsClickable
 ) {
   return {
     label,
@@ -68,7 +74,8 @@ function initialiseMenuButtons(
       subButtonIcon !== "",
       subButtonIcon,
       subButtonExecuteFunction,
-      subButtonNoBarsBehaviour
+      subButtonNoBarsBehaviour,
+      subButtonBarsClickable
     ),
   };
 }
