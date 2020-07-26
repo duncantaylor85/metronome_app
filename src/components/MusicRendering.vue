@@ -53,7 +53,9 @@ export default {
       this.userMark.splice(barNumber - 1, 1, false);
     },
     selectBar(barNumber) {
-      this.userPositionInterface.changeUserPosition(barNumber);
+      if (this.subButtonStatus.clickableBars) {
+        this.userPositionInterface.changeUserPosition(barNumber);
+      }
     },
     getTimeSigNumeratorOf: function(bar) {
       // replaces $store.getters
@@ -83,7 +85,6 @@ export default {
         highlightNormal: (barNum) => this.highlightNormal(barNum),
         highlightCountIn: (barNum) => this.highlightCountIn(barNum),
         cancelHighlight: (barNum) => this.cancelHighlight(barNum),
-        clearAllHighlights: () => this.clearAllHighlights(),
       };
     },
     clearAllHighlights() {
