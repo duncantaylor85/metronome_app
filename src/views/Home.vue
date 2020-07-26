@@ -94,6 +94,11 @@ export default {
         this.selectMode("home");
         this.menuData.tabSelected = 0;
       } else {
+        if (this.menuData.tabSelected !== "1") {
+          this.selectMode("add");
+          this.menuData.tabSelected = 1;
+        }
+        bus.$emit("animate-plus-button");
         console.log("need to do something when play is clicked without bars");
       }
     },
@@ -115,6 +120,11 @@ export default {
         this.menuData.tabSelected = 0;
         this.playbackInterface.rewind();
       } else {
+        if (this.menuData.tabSelected !== "1") {
+          this.selectMode("add");
+          this.menuData.tabSelected = 1;
+        }
+        bus.$emit("animate-plus-button");
         console.log("need to do something when rewind is clicked without bars");
       }
     },
