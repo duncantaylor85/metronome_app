@@ -131,8 +131,6 @@ export default {
     deleteBar(barNumber) {
       mutators.deleteBar(barNumber);      
       this.positionInterface.updateCurrentPlayPositionOnDelete(barNumber)
-      bus.$emit("change-gradient-array");
-      bus.$emit("change-userMark-array");
     },
 
     displayAddBarsDialog() {

@@ -47,8 +47,7 @@ export default {
         amountOfBars: this.addBarsData.amountOfBars,
       });
 
-      bus.$emit("change-gradient-array");
-      bus.$emit("change-userMark-array");
+      
       this.closeDialog();
     },
     closeDialog() {
