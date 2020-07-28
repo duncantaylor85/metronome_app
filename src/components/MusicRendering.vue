@@ -116,8 +116,6 @@ export default {
     this.userPositionInterface = playbackModel.getUserPositionInterface();
   },
   created() {
-    bus.$on("change-gradient-array", () => this.clearGradientArray());
-    bus.$on("change-userMark-array", () => this.clearUserMarkArray());
     playbackModelSetup.setBarHighlighter(this.getBarHighlighter());
     playbackModelSetup.setMarker(this.getBarMarker());
     playbackModelSetup.setup();

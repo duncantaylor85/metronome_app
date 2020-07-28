@@ -129,9 +129,8 @@ export default {
       }
     },
     deleteBar(barNumber) {
-      mutators.deleteBar(barNumber);
-      bus.$emit("change-gradient-array");
-      bus.$emit("change-userMark-array");
+      mutators.deleteBar(barNumber);      
+      this.positionInterface.updateCurrentPlayPositionOnDelete(barNumber)
     },
 
     displayAddBarsDialog() {
