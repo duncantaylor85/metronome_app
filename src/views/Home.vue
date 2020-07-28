@@ -122,7 +122,7 @@ export default {
       } else {
         if (this.menuData.tabSelected !== "1") {
           this.selectMode("add");
-          this.menuData.tabSelected = 1;
+          this.menuData.tabSelected = 1;updateCurrentPlayPositionOnDelete()
         }
         bus.$emit("animate-plus-button");
         console.log("need to do something when rewind is clicked without bars");
@@ -130,6 +130,8 @@ export default {
     },
     deleteBar(barNumber) {
       mutators.deleteBar(barNumber);
+      
+      this.positionInterface.updateCurrentPlayPositionOnDelete(barNumber)
       bus.$emit("change-gradient-array");
       bus.$emit("change-userMark-array");
     },

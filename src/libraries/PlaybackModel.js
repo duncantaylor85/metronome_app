@@ -110,6 +110,17 @@ class PositionController {
     return fullSequence
   }
 
+  updateCurrentPlayPositionOnDelete(barNumber) {
+    if (this.currentUserSelectedBar === barNumber) {
+      this.currentPlayPosition = 1
+      this.currentUserSelectedBar = 1
+      this.state = PositionState.REWOUND_TO_START
+    } else {
+      this.currentPlayPosition = this.currentUserSelectedBar
+
+    }
+  }
+
   /**
    * Set user-selected position and current position to the beginning of the full bar sequence, highlight first bar
    */
@@ -321,6 +332,8 @@ class PlaybackCoordinator {
       changeUserPosition: barNum => this.positionController.changeUserPosition(barNum), // needed lambda or "this" produces errors
       clearMarkAndHighlight: () => this.positionController.clearMarkerAndHighlight(),
       applyMarkAndHighlight: () => this.positionController.applyMarkAndHighlight(),
+      updateCurrentPlayPositionOnDelete: barNum => this.positionController.updateCurrentPlayPositionOnDelete(barNum),
+      
     }
   }
 
