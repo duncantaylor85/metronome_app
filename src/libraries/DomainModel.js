@@ -94,6 +94,15 @@ class BarSequence {
     }
   }
 
+  insertBars(barNumber, timeSig, bpm, count) {
+    const bar = new Bar(timeSig, bpm);
+    for (let i = 0; i < count; i++) {
+      this.bars.splice(barNumber, 0, bar);
+      barNumber++;
+    }
+
+  }
+
   /**
    * Replace the bar at the given bar number with a different bar, using
    * the given time signature and metronome marking
