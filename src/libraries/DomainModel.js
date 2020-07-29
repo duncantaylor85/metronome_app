@@ -88,9 +88,10 @@ class BarSequence {
    * @param {Number} count
    * @returns {void}
    */
-  addBarsToEnd(timeSig, bpm, count) {
-    for (let i = 1; i <= count; i++) {
-      this.bars.push(new Bar(timeSig, bpm));
+  addBarsToStart(timeSig, bpm, count) {
+    const bar = new Bar(timeSig, bpm);
+    for (let i = 0; i < count; i++) {
+      this.bars.splice(0, 0, bar);
     }
   }
 

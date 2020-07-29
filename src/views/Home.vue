@@ -27,7 +27,7 @@
     <v-content>
       <v-container fluid>
         <MusicRendering :subButtonStatus="menuData.subButtonStatus" ref="musicRendering" />
-        <AddBarsDialog :toggleAddBarsModal="addBarsData.dialog" @close-dialog="closeAddDialog" />
+        <AddBarsDialog :toggleAddBarsModal="addBarsData.dialog" :barNumber="addBarsData.barNumber" @close-dialog="closeAddDialog" />
         <EditBarDialog :toggleEditBarModal="editBarData.dialog" :barNumber="editBarData.barNumber" :barTimeSig="editBarData.barTimeSig" @close-dialog="closeEditDialog" />
       </v-container>
     </v-content>
@@ -55,6 +55,7 @@ export default {
         tabSelected: 0,
       },
       addBarsData: {
+        barNumber: null,
         dialog: false,
       },
       editBarData: {
@@ -133,7 +134,8 @@ export default {
       this.positionInterface.updateCurrentPlayPositionOnDelete(barNumber)
     },
 
-    displayAddBarsDialog() {
+    displayAddBarsDialog(barNumber) {
+      this.addBarsData.barNumber = barNumber
       this.addBarsData.dialog = true;
     },
     displayEditBarDialog(barNumber) {

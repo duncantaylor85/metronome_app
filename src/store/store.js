@@ -33,8 +33,8 @@ export const mutators = {
     store.barSequence.insertBars(barNumber, timeSig, bpm, amountOfBars);
 
   },
-  addBars({ timeSig, bpm, amountOfBars }) {
-    store.barSequence.addBarsToEnd(timeSig, bpm, amountOfBars);
+  addBarsToStart({ timeSig, bpm, amountOfBars }) {
+    store.barSequence.addBarsToStart(timeSig, bpm, amountOfBars);
   },
   deleteBar(barNumber) {
     store.barSequence.deleteBar(barNumber);

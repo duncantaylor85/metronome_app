@@ -5,6 +5,12 @@
         <v-btn :class="{ plusButton: plusButtonBeat, subButton: true }" color="black" @click="subButtonStatus.noBarsBehaviour" large icon v-if="barCount == 0 && subButtonStatus.noBarsBehaviour"
           ><v-icon>{{ subButtonStatus.icon }}</v-icon>
         </v-btn>
+        
+          <v-btn class="ml-10 mt-2 subButton" color="black" absolute left icon small v-if="barCount > 0 && subButtonStatus.icon === 'mdi-plus-circle'" @click.native="subButtonStatus.executeFunction(0)"
+            ><v-icon>{{ subButtonStatus.icon }}</v-icon></v-btn
+          >
+        
+        
 
         <v-img v-for="(bar, index) in barCount" :gradient="gradient[index]" @click="selectBar(bar)" :key="index" class="mb-7" max-width="177" src="@/assets/singlebar.jpg"
           ><span class="ml-1 my-0 font-weight-bold">
