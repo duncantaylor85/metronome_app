@@ -13,7 +13,7 @@
         </v-btn>
         <v-btn
           fixed
-          class="ml-n7 mt-2 subButton specialButton"
+          class="ml-n7 mt-2 subButton"
           color="black"
           icon
           small
@@ -160,8 +160,6 @@ export default {
 </script>
 
 <style scoped>
-.specialButton {
-}
 .subButton {
   background-color: lightblue;
 }
