@@ -1,13 +1,37 @@
 <template>
   <div class="music-renderer">
-    <v-container>
-      <v-row class="d-flex flex-wrap">
-        <v-btn :class="{ plusButton: plusButtonBeat, subButton: true }" color="black" @click="subButtonStatus.noBarsBehaviour" large icon v-if="barCount == 0 && subButtonStatus.noBarsBehaviour"
+    <v-container fluid>
+      <v-row class="d-flex flex-wrap pl-6">
+        <v-btn
+          :class="{ plusButton: plusButtonBeat, subButton: true }"
+          color="black"
+          @click="subButtonStatus.noBarsBehaviour"
+          large
+          icon
+          v-if="barCount == 0 && subButtonStatus.noBarsBehaviour"
           ><v-icon>{{ subButtonStatus.icon }}</v-icon>
         </v-btn>
+        <v-btn
+          fixed
+          class="ml-n7 mt-2 subButton"
+          color="black"
+          icon
+          small
+          v-if="barCount > 0 && subButtonStatus.icon === 'mdi-plus-circle'"
+          @click.native="subButtonStatus.executeFunction(0)"
+          ><v-icon>{{ subButtonStatus.icon }}</v-icon></v-btn
+        >
 
-        <v-img v-for="(bar, index) in barCount" :gradient="gradient[index]" @click="selectBar(bar)" :key="index" class="mb-7" max-width="177" src="@/assets/singlebar.jpg"
-          ><span class="ml-1 my-0 font-weight-bold">
+        <v-img
+          v-for="(bar, index) in barCount"
+          :gradient="gradient[index]"
+          @click="selectBar(bar)"
+          :key="index"
+          class="mb-7"
+          max-width="177"
+          src="@/assets/singlebar.jpg"
+        >
+          <span class="ml-1 my-0 font-weight-bold">
             {{ getTimeSigNumeratorOf(bar) }}
           </span>
           <span class="indigo lighten-4" v-if="userMark[index]">▼</span>
@@ -15,7 +39,16 @@
             {{ getTimeSigDenominatorOf(bar) }}
           </p>
 
-          <v-btn class="mt-n2 mr-n3 subButton" color="black" absolute top right icon small v-if="subButtonStatus.visibility" @click.native="subButtonStatus.executeFunction(bar)"
+          <v-btn
+            class="mt-n2 mr-n3 subButton"
+            color="black"
+            absolute
+            top
+            right
+            icon
+            small
+            v-if="subButtonStatus.visibility"
+            @click.native="subButtonStatus.executeFunction(bar)"
             ><v-icon>{{ subButtonStatus.icon }}</v-icon></v-btn
           >
         </v-img>

@@ -28,7 +28,7 @@ import { bus } from "../main";
 
 export default {
   name: "AddBarsDialog",
-  props: ["toggleAddBarsModal"],
+  props: ["toggleAddBarsModal", "barNumber"],
   data() {
     return {
       addBarsData: {
@@ -41,13 +41,32 @@ export default {
   },
   methods: {
     addBars() {
-      mutators.addBars({
+      if (this.barNumber === 0) {
+        mutators.addBarsToStart({
+          timeSig: new TimeSignature(this.addBarsData.numerator, BasicDuration.fromInteger(this.addBarsData.denominatorSelected)),
+          bpm: new BPM(120, BasicDuration._4th),
+          amountOfBars: this.addBarsData.amountOfBars,
+        }) 
+              
+      } else {
+        mutators.insertBars({
+          barNumber: this.barNumber,
+          timeSig: new TimeSignature(this.addBarsData.numerator, BasicDuration.fromInteger(this.addBarsData.denominatorSelected)),
+          bpm: new BPM(120, BasicDuration._4th),
+          amountOfBars: this.addBarsData.amountOfBars,
+        })
+      }
+      this.closeDialog();
+    },
+
+    insertBars() {
+      console.log(this.barNumber)      
+      mutators.insertBars({
+        barNumber: this.barNumber,
         timeSig: new TimeSignature(this.addBarsData.numerator, BasicDuration.fromInteger(this.addBarsData.denominatorSelected)),
         bpm: new BPM(120, BasicDuration._4th),
         amountOfBars: this.addBarsData.amountOfBars,
-      });
-
-      
+      })
       this.closeDialog();
     },
     closeDialog() {

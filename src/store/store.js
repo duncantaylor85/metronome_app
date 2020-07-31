@@ -29,8 +29,12 @@ const store = Vue.observable({
 });
 
 export const mutators = {
-  addBars({ timeSig, bpm, amountOfBars }) {
-    store.barSequence.addBarsToEnd(timeSig, bpm, amountOfBars);
+  insertBars({barNumber, timeSig, bpm, amountOfBars}) {
+    store.barSequence.insertBars(barNumber, timeSig, bpm, amountOfBars);
+
+  },
+  addBarsToStart({ timeSig, bpm, amountOfBars }) {
+    store.barSequence.addBarsToStart(timeSig, bpm, amountOfBars);
   },
   deleteBar(barNumber) {
     store.barSequence.deleteBar(barNumber);
